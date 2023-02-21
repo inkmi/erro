@@ -216,8 +216,11 @@ func (l *logger) printStack(stLines []StackTraceItem) {
 	for i := len(stLines) - 1; i >= 0; i-- {
 		padding := ""
 		if !l.config.DisableStackIndentation {
-			for j := 0; j < len(stLines)-1-i; j++ {
+			for j := 0; j < len(stLines)-1-i-1; j++ {
 				padding += "  "
+			}
+			if i < len(stLines)-1 {
+				padding += "╰╴"
 			}
 		}
 		if LogTo != nil {
