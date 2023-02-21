@@ -1,22 +1,9 @@
 package main
 
 import (
-	"erro"
 	"errors"
+	"github.com/StephanSchmidt/erro"
 	"github.com/sirupsen/logrus"
-)
-
-var (
-	debug = erro.NewLogger(&erro.Config{
-		PrintFunc:               logrus.Errorf,
-		LinesBefore:             6,
-		LinesAfter:              3,
-		PrintError:              true,
-		PrintSource:             true,
-		DisableStackIndentation: false,
-		PrintStack:              true,
-		ExitOnDebugSuccess:      true,
-	})
 )
 
 func main() {
