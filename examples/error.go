@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"github.com/StephanSchmidt/erro"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -43,7 +42,6 @@ func someBigFunction() error {
 }
 
 func someSmallFunction() {
-	fmt.Print("I do things !")
 }
 
 func someNastyFunction() error {
