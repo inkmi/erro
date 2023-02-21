@@ -1,6 +1,7 @@
-package errlog
+package erro
 
 import (
+	"errors"
 	"os"
 	"strings"
 
@@ -13,13 +14,9 @@ var (
 	gopath = os.Getenv("GOPATH")
 )
 
-//Logger interface allows to log an error, or to print source code lines. Check out NewLogger function to learn more about Logger objects and Config.
+// Logger interface allows to log an error, or to print source code lines. Check out NewLogger function to learn more about Logger objects and Config.
 type Logger interface {
-	// Debug wraps up Logger debugging funcs related to an error
-	// If the given error is nil, it returns immediately
-	// It relies on Logger.Config to determine what will be printed or executed
-	// It returns whether err != nil
-	Debug(err error) bool
+	New(err error, fmt string, a ...interface{}) error
 	//PrintSource prints lines based on given opts (see PrintSourceOptions type definition)
 	PrintSource(lines []string, opts PrintSourceOptions)
 	//DebugSource debugs a source file
@@ -33,7 +30,7 @@ type Logger interface {
 	Disable(bool)
 }
 
-//Config holds the configuration for a logger
+// Config holds the configuration for a logger
 type Config struct {
 	PrintFunc               func(format string, data ...interface{}) //Printer func (eg: fmt.Printf)
 	LinesBefore             int                                      //How many lines to print *before* the error line when printing source code
@@ -54,13 +51,13 @@ type PrintSourceOptions struct {
 	Highlighted map[int][]int //map[lineIndex][columnstart, columnEnd] of chars to highlight
 }
 
-//logger holds logger object, implementing Logger interface
+// logger holds logger object, implementing Logger interface
 type logger struct {
 	config             *Config //config for the logger
 	stackDepthOverload int     //stack depth to ignore when reading stack
 }
 
-//NewLogger creates a new logger struct with given config
+// NewLogger creates a new logger struct with given config
 func NewLogger(cfg *Config) Logger {
 	l := logger{
 		config:             cfg,
@@ -72,48 +69,46 @@ func NewLogger(cfg *Config) Logger {
 	return &l
 }
 
-// Debug wraps up Logger debugging funcs related to an error
-// If the given error is nil, it returns immediately
-// It relies on Logger.Config to determine what will be printed or executed
-func (l *logger) Debug(uErr error) bool {
-	if l.config.Mode == ModeDisabled {
-		return uErr != nil
-	}
-	l.Doctor()
-	if uErr == nil {
-		return false
-	}
+func (l *logger) New(uErr error, format string, a ...interface{}) error {
+	if DevMode {
+		if l.config.Mode == ModeDisabled {
+			return errors.New("X")
+		}
+		l.Doctor()
+		if uErr == nil {
+			return errors.New("X")
+		}
 
-	stLines := parseStackTrace(1 + l.stackDepthOverload)
-	if stLines == nil || len(stLines) < 1 {
-		l.Printf("Error: %s", uErr)
-		l.Printf("Errlog tried to debug the error but the stack trace seems empty. If you think this is an error, please open an issue at https://github.com/snwfdhmp/errlog/issues/new and provide us logs to investigate.")
-		return true
+		stLines := parseStackTrace(1 + l.stackDepthOverload)
+		if stLines == nil || len(stLines) < 1 {
+			l.Printf("Error: %s", uErr)
+			l.Printf("Errlog tried to debug the error but the stack trace seems empty. If you think this is an error, please open an issue at https://github.com/StephanSchmidt/erro/issues/new and provide us logs to investigate.")
+			return errors.New("X")
+		}
+
+		if l.config.PrintError {
+			l.Printf("Error in %s: %s", stLines[0].CallingObject, color.YellowString(uErr.Error()))
+		}
+
+		if l.config.PrintSource {
+			l.DebugSource(stLines[0].SourcePathRef, stLines[0].SourceLineRef)
+		}
+
+		if l.config.PrintStack {
+			l.Printf("Stack trace:")
+			l.printStack(stLines)
+		}
+
+		if l.config.ExitOnDebugSuccess {
+			os.Exit(1)
+		}
+
+		l.stackDepthOverload = 0
 	}
-
-	if l.config.PrintError {
-		l.Printf("Error in %s: %s", stLines[0].CallingObject, color.YellowString(uErr.Error()))
-	}
-
-	if l.config.PrintSource {
-		l.DebugSource(stLines[0].SourcePathRef, stLines[0].SourceLineRef)
-	}
-
-	if l.config.PrintStack {
-		l.Printf("Stack trace:")
-		l.printStack(stLines)
-	}
-
-	if l.config.ExitOnDebugSuccess {
-		os.Exit(1)
-	}
-
-	l.stackDepthOverload = 0
-
-	return true
+	return errors.New("X")
 }
 
-//DebugSource prints certain lines of source code of a file for debugging, using (*logger).config as configurations
+// DebugSource prints certain lines of source code of a file for debugging, using (*logger).config as configurations
 func (l *logger) DebugSource(filepath string, debugLineNumber int) {
 	filepathShort := filepath
 	if gopath != "" {
@@ -122,7 +117,7 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int) {
 
 	b, err := afero.ReadFile(fs, filepath)
 	if err != nil {
-		l.Printf("errlog: cannot read file '%s': %s. If sources are not reachable in this environment, you should set PrintSource=false in logger config.", filepath, err)
+		l.Printf("erro: cannot read file '%s': %s. If sources are not reachable in this environment, you should set PrintSource=false in logger config.", filepath, err)
 		return
 		// l.Debug(err)
 	}
@@ -207,7 +202,7 @@ func (l *logger) Doctor() (neededDoctor bool) {
 	}
 
 	if neededDoctor && !debugMode {
-		logrus.Warn("errlog: Doctor() has detected and fixed some problems on your logger configuration. It might have modified your configuration. Check logs by enabling debug. 'errlog.SetDebugMode(true)'.")
+		logrus.Warn("erro: Doctor() has detected and fixed some problems on your logger configuration. It might have modified your configuration. Check logs by enabling debug. 'erro.SetDebugMode(true)'.")
 	}
 
 	return
@@ -221,16 +216,16 @@ func (l *logger) printStack(stLines []StackTraceItem) {
 				padding += "  "
 			}
 		}
-		l.Printf("%s (%s:%d)", stLines[i].CallingObject, stLines[i].SourcePathRef, stLines[i].SourceLineRef)
+		l.Printf(padding+"%s (%s:%d)", stLines[i].CallingObject, stLines[i].SourcePathRef, stLines[i].SourceLineRef)
 	}
 }
 
-//Printf is the function used to log
+// Printf is the function used to log
 func (l *logger) Printf(format string, data ...interface{}) {
 	l.config.PrintFunc(format, data...)
 }
 
-//Overload adds depths to remove when parsing next stack trace
+// Overload adds depths to remove when parsing next stack trace
 func (l *logger) Overload(amount int) {
 	l.stackDepthOverload += amount
 }

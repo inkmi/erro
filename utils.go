@@ -1,6 +1,8 @@
-package errlog
+package erro
 
-import "strings"
+import (
+	"strings"
+)
 
 func isIntInSlice(i int, s []int) bool {
 	for vi := range s {
@@ -11,7 +13,7 @@ func isIntInSlice(i int, s []int) bool {
 	return false
 }
 
-//deleteBlankLinesFromRange increments and decrements respectively start and end so they are not representing an empty line (in slice lines)
+// deleteBlankLinesFromRange increments and decrements respectively start and end so they are not representing an empty line (in slice lines)
 func deleteBlankLinesFromRange(lines []string, start, end *int) {
 	//clean from out of range values
 	(*start) = max(*start, 0)

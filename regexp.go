@@ -1,4 +1,4 @@
-package errlog
+package erro
 
 import (
 	"fmt"
@@ -21,8 +21,8 @@ var (
 	regexpParseStack                 = regexp.MustCompile(`((?:(?:[a-zA-Z._-]+)[/])*(?:[*a-zA-Z0-9_]*\.)+[a-zA-Z0-9_]+)\(((?:(?:0x[0-9a-f]+)|(?:...)[,\s]*)+)*\)[\s]+([/:\-a-zA-Z0-9\._]+)[:]([0-9]+)[\s](?:\+0x([0-9a-f]+))*`)
 	regexpHexNumber                  = regexp.MustCompile(`0x[0-9a-f]+`)
 	regexpFuncLine                   = regexp.MustCompile(`^func[\s][a-zA-Z0-9]+[(](.*)[)][\s]*{`)
-	regexpParseDebugLineFindFunc     = regexp.MustCompile(`[\.]Debug[\(](.*)[/)]`)
-	regexpParseDebugLineParseVarName = regexp.MustCompile(`[\.]Debug[\(](.*)\)`)
+	regexpParseDebugLineFindFunc     = regexp.MustCompile(`erro\.New\(([^,]*)`)
+	regexpParseDebugLineParseVarName = regexp.MustCompile(`erro\.New\(([^,]*)`)
 	regexpFindVarDefinition          = func(varName string) *regexp.Regexp {
 		return regexp.MustCompile(fmt.Sprintf(`%s[\s\:]*={1}([\s]*[a-zA-Z0-9\._]+)`, varName))
 	}
@@ -38,7 +38,6 @@ type StackTraceItem struct {
 }
 
 func parseStackTrace(deltaDepth int) []StackTraceItem {
-	fmt.Println(string(debug.Stack()))
 	return parseAnyStackTrace(string(debug.Stack()), deltaDepth)
 }
 
@@ -54,7 +53,7 @@ func parseAnyStackTrace(stackStr string, deltaDepth int) []StackTraceItem {
 	for i := range parsedRes {
 		args := regexpHexNumber.FindAllString(parsedRes[i][2], -1)
 		srcLine, err := strconv.Atoi(parsedRes[i][4])
-		if Debug(err) {
+		if err != nil {
 			srcLine = -1
 		}
 
@@ -62,7 +61,7 @@ func parseAnyStackTrace(stackStr string, deltaDepth int) []StackTraceItem {
 		mysteryNumber := int64(-25)
 		if mysteryNumberStr != "" {
 			mysteryNumber, err = strconv.ParseInt(parsedRes[i][5], 16, 32)
-			if Debug(err) {
+			if err != nil {
 				mysteryNumber = -1
 			}
 		}
@@ -79,7 +78,7 @@ func parseAnyStackTrace(stackStr string, deltaDepth int) []StackTraceItem {
 	return sti
 }
 
-//findFuncLine finds line where func is declared
+// findFuncLine finds line where func is declared
 func findFuncLine(lines []string, lineNumber int) int {
 	for i := lineNumber; i > 0; i-- {
 		if regexpFuncLine.Match([]byte(lines[i])) {
@@ -90,8 +89,9 @@ func findFuncLine(lines []string, lineNumber int) int {
 	return -1
 }
 
-//findFailingLine finds line where <var> is defined, if Debug(<var>) is present on lines[debugLine]. funcLine serves as max
+// findFailingLine finds line where <var> is defined, if Debug(<var>) is present on lines[debugLine]. funcLine serves as max
 func findFailingLine(lines []string, funcLine int, debugLine int) (failingLineIndex, columnStart, columnEnd int) {
+
 	failingLineIndex = -1 //init error flag
 
 	//find var name

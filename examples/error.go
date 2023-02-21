@@ -1,25 +1,27 @@
 package main
 
 import (
+	"erro"
 	"errors"
-
 	"github.com/sirupsen/logrus"
-	"github.com/snwfdhmp/errlog"
 )
 
 var (
-	debug = errlog.NewLogger(&errlog.Config{
-		PrintFunc:          logrus.Errorf,
-		LinesBefore:        6,
-		LinesAfter:         3,
-		PrintError:         true,
-		PrintSource:        true,
-		PrintStack:         false,
-		ExitOnDebugSuccess: true,
+	debug = erro.NewLogger(&erro.Config{
+		PrintFunc:               logrus.Errorf,
+		LinesBefore:             6,
+		LinesAfter:              3,
+		PrintError:              true,
+		PrintSource:             true,
+		DisableStackIndentation: false,
+		PrintStack:              true,
+		ExitOnDebugSuccess:      true,
 	})
 )
 
 func main() {
+	erro.DevMode = true
+
 	logrus.Print("Start of the program")
 
 	wrapingFunc()
@@ -31,20 +33,22 @@ func wrapingFunc() {
 	someBigFunction()
 }
 
-func someBigFunction() {
+func someBigFunction() error {
 	someDumbFunction()
 
 	someSmallFunction()
 
 	someDumbFunction()
 
-	if err := someNastyFunction(); debug.Debug(err) {
-		return
+	if e := someNastyFunction(); e != nil {
+		return erro.New(e, "Can't open bug database")
 	}
 
 	someSmallFunction()
 
 	someDumbFunction()
+
+	return errors.New("x")
 }
 
 func someSmallFunction() {
