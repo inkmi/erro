@@ -2,12 +2,11 @@ package erro
 
 import (
 	"errors"
-	"os"
-	"strings"
-
 	"github.com/fatih/color"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/afero"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 var (
@@ -95,7 +94,7 @@ func (l *logger) New(uErr error, format string, a ...interface{}) error {
 		}
 
 		if l.config.PrintStack {
-			l.Printf("Stack trace:")
+			l.Printf(color.BlueString("Stack trace:"))
 			l.printStack(stLines)
 		}
 
@@ -185,26 +184,31 @@ func (l *logger) Doctor() (neededDoctor bool) {
 
 	if l.config.PrintFunc == nil {
 		neededDoctor = true
-		logrus.Debug("PrintFunc not set for this logger. Replacing with DefaultLoggerPrintFunc.")
+		if LogTo != nil {
+			(*LogTo).Debug().Msg("PrintFunc not set for this logger. Replacing with DefaultLoggerPrintFunc.")
+		}
 		l.config.PrintFunc = DefaultLoggerPrintFunc
 	}
 
 	if l.config.LinesBefore < 0 {
 		neededDoctor = true
-		logrus.Debugf("LinesBefore is '%d' but should not be <0. Setting to 0.", l.config.LinesBefore)
+		if LogTo != nil {
+			(*LogTo).Debug().Msgf("LinesBefore is '%d' but should not be <0. Setting to 0.", l.config.LinesBefore)
+		}
 		l.config.LinesBefore = 0
 	}
 
 	if l.config.LinesAfter < 0 {
 		neededDoctor = true
-		logrus.Debugf("LinesAfters is '%d' but should not be <0. Setting to 0.", l.config.LinesAfter)
+		if LogTo != nil {
+			(*LogTo).Debug().Msgf("LinesAfters is '%d' but should not be <0. Setting to 0.", l.config.LinesAfter)
+		}
 		l.config.LinesAfter = 0
 	}
 
-	if neededDoctor && !debugMode {
-		logrus.Warn("erro: Doctor() has detected and fixed some problems on your logger configuration. It might have modified your configuration. Check logs by enabling debug. 'erro.SetDebugMode(true)'.")
+	if neededDoctor && !debugMode && LogTo != nil {
+		(*LogTo).Debug().Msgf("erro: Doctor() has detected and fixed some problems on your logger configuration. It might have modified your configuration. Check logs by enabling debug. 'erro.SetDebugMode(true)'.")
 	}
-
 	return
 }
 
@@ -216,13 +220,18 @@ func (l *logger) printStack(stLines []StackTraceItem) {
 				padding += "  "
 			}
 		}
-		l.Printf(padding+"%s (%s:%d)", stLines[i].CallingObject, stLines[i].SourcePathRef, stLines[i].SourceLineRef)
+		if LogTo != nil {
+			file := filepath.Base(stLines[i].SourcePathRef)
+			(*LogTo).Debug().Msgf(padding+"%s ( %s:%d )", stLines[i].CallingObject, file, stLines[i].SourceLineRef)
+		}
 	}
 }
 
 // Printf is the function used to log
 func (l *logger) Printf(format string, data ...interface{}) {
-	l.config.PrintFunc(format, data...)
+	if LogTo != nil {
+		(*LogTo).Debug().Msgf(format, data...)
+	}
 }
 
 // Overload adds depths to remove when parsing next stack trace

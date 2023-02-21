@@ -2,18 +2,22 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"github.com/StephanSchmidt/erro"
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
+	"os"
 )
 
 func main() {
-	erro.DevMode = true
+	logger := log.With().Caller().Logger().Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	zerolog.SetGlobalLevel(zerolog.DebugLevel)
 
-	logrus.Print("Start of the program")
+	erro.LogTo = &logger
+	erro.DevMode = true
 
 	wrapingFunc()
 
-	logrus.Print("End of the program")
 }
 
 func wrapingFunc() {
@@ -39,7 +43,7 @@ func someBigFunction() error {
 }
 
 func someSmallFunction() {
-	logrus.Print("I do things !")
+	fmt.Print("I do things !")
 }
 
 func someNastyFunction() error {

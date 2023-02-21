@@ -6,9 +6,6 @@ import (
 	"runtime/debug"
 	"strconv"
 	"strings"
-
-	"github.com/fatih/color"
-	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -91,7 +88,6 @@ func findFuncLine(lines []string, lineNumber int) int {
 
 // findFailingLine finds line where <var> is defined, if Debug(<var>) is present on lines[debugLine]. funcLine serves as max
 func findFailingLine(lines []string, funcLine int, debugLine int) (failingLineIndex, columnStart, columnEnd int) {
-
 	failingLineIndex = -1 //init error flag
 
 	//find var name
@@ -106,21 +102,17 @@ func findFailingLine(lines []string, funcLine int, debugLine int) (failingLineIn
 
 	//start to search for var definition
 	for i := debugLine; i >= funcLine && i > 0; i-- { // going reverse from debug line to funcLine
-		logrus.Debugf("%d: %s", i, lines[i]) // print line for debug
-
 		// early skipping some cases
 		if strings.Trim(lines[i], " \n\t") == "" { // skip if line is blank
-			logrus.Debugf(color.BlueString("%d: ignoring blank line", i))
+			//	(*LogTo).Debug().Msgf(color.BlueString("%d: ignoring blank line", i))
 			continue
 		} else if len(lines[i]) >= 2 && lines[i][:2] == "//" { // skip if line is a comment line (note: comments of type '/*' can be stopped inline and code may be placed after it, therefore we should pass line if '/*' starts the line)
-			logrus.Debugf(color.BlueString("%d: ignoring comment line", i))
 			continue
 		}
 
 		//search for var definition
 		index := reFindVar.FindStringSubmatchIndex(lines[i])
-		if index == nil { //if not found, continue searching with next line
-			logrus.Debugf(color.BlueString("%d: var definition not found for '%s' (regexp no match).", i, varName))
+		if index == nil {
 			continue
 		}
 		// At that point we found our definition
@@ -144,7 +136,9 @@ func findFailingLine(lines []string, funcLine int, debugLine int) (failingLineIn
 		}
 
 		if columnEnd == 0 { //columnEnd was not found
-			logrus.Debugf("Fixing value of columnEnd (0). Defaulting to end of failing line.")
+			if LogTo != nil {
+				(*LogTo).Debug().Msgf("Fixing value of columnEnd (0). Defaulting to end of failing line.")
+			}
 			columnEnd = len(lines[i]) - 1
 		}
 		return

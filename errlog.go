@@ -58,7 +58,6 @@
 package erro
 
 import (
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/afero"
 )
 
@@ -66,16 +65,6 @@ var (
 	debugMode = false
 	fs        = afero.NewOsFs() //fs is at package level because I think it needn't be scoped to loggers
 )
-
-// SetDebugMode sets debug mode to On if toggle==true or Off if toggle==false. It changes log level an so displays more logs about whats happening. Useful for debugging.
-func SetDebugMode(toggle bool) {
-	if toggle {
-		logrus.SetLevel(logrus.DebugLevel)
-	} else {
-		logrus.SetLevel(logrus.InfoLevel)
-	}
-	debugMode = toggle
-}
 
 func New(uErr error, format string, a ...interface{}) error {
 	DefaultLogger.Overload(1) // Prevents from adding this func to the stack trace
