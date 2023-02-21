@@ -1,4 +1,4 @@
-module erro
+module github.com/StephanSchmidt/erro
 
 go 1.20
 

@@ -24,8 +24,6 @@ go get github.com/StephanSchmidt/erro
 
 Click the following badge to open LICENSE information.
 
-[![license](https://img.shields.io/github/license/StephanSchmidt/erro.svg?maxAge=60000)](https://github.com/StephanSchmidt/erro/LICENSE)
-
 ## Contributors
 
 ### Major
