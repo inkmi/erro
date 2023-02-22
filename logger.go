@@ -100,7 +100,6 @@ func (l *logger) New(errorString string, source error, a ...interface{}) error {
 }
 
 func (l *logger) NewE(myErr error, source error, a ...interface{}) error {
-	a = append([]any{source}, a...)
 	if DevMode {
 		l.Doctor()
 		if myErr == nil || source == nil {
