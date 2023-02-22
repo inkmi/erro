@@ -15,12 +15,9 @@ var (
 		Unfortunately, I didn't check against other code formatting tools, so it may require some evolution.
 		Feel free to create an issue or send a PR.
 	*/
-	regexpParseStack                 = regexp.MustCompile(`((?:(?:[a-zA-Z._-]+)[/])*(?:[*a-zA-Z0-9_]*\.)+[a-zA-Z0-9_]+)\(((?:(?:0x[0-9a-f]+)|(?:...)[,\s]*)+)*\)[\s]+([/:\-a-zA-Z0-9\._]+)[:]([0-9]+)[\s](?:\+0x([0-9a-f]+))*`)
-	regexpHexNumber                  = regexp.MustCompile(`0x[0-9a-f]+`)
-	regexpFuncLine                   = regexp.MustCompile(`^func[\s][a-zA-Z0-9]+[(](.*)[)][\s]*{`)
-	regexpParseDebugLineFindFunc     = regexp.MustCompile(`erro\.New\(([^,]*)`)
-	regexpParseDebugLineParseVarName = regexp.MustCompile(`erro\.New\(([^,]*)`)
-	regexpFindVarDefinition          = func(varName string) *regexp.Regexp {
+	regexpParseStack        = regexp.MustCompile(`((?:(?:[a-zA-Z._-]+)[/])*(?:[*a-zA-Z0-9_]*\.)+[a-zA-Z0-9_]+)\(((?:(?:0x[0-9a-f]+)|(?:...)[,\s]*)+)*\)[\s]+([/:\-a-zA-Z0-9\._]+)[:]([0-9]+)[\s](?:\+0x([0-9a-f]+))*`)
+	regexpHexNumber         = regexp.MustCompile(`0x[0-9a-f]+`)
+	regexpFindVarDefinition = func(varName string) *regexp.Regexp {
 		return regexp.MustCompile(fmt.Sprintf(`%s[\s\:]*={1}([\s]*[a-zA-Z0-9\._]+)`, varName))
 	}
 )
@@ -78,7 +75,8 @@ func parseAnyStackTrace(stackStr string, deltaDepth int) []StackTraceItem {
 // findFuncLine finds line where func is declared
 func findFuncLine(lines []string, lineNumber int) int {
 	for i := lineNumber; i > 0; i-- {
-		if regexpFuncLine.Match([]byte(lines[i])) {
+		fmt.Printf("Check: %s, %v\n", lines[i], MatchFunc(lines[i]))
+		if MatchFunc(lines[i]) {
 			return i
 		}
 	}
@@ -91,14 +89,10 @@ func findFailingLine(lines []string, funcLine int, debugLine int) (failingLineIn
 	failingLineIndex = -1 //init error flag
 
 	//find var name
-	reMatches := regexpParseDebugLineParseVarName.FindStringSubmatch(lines[debugLine-1])
-	if len(reMatches) < 2 {
-		return
-	}
-	varName := reMatches[1]
+	varName := MatchVarName(lines[debugLine-1])
 
 	//build regexp for finding var definition
-	reFindVar := regexpFindVarDefinition(varName)
+	reFindVar := regexpFindVarDefinition(*varName)
 
 	//start to search for var definition
 	for i := debugLine; i >= funcLine && i > 0; i-- { // going reverse from debug line to funcLine

@@ -8,7 +8,7 @@
 //	line 13 of /Users/StephanSchmidt/go/src/github.com/StephanSchmidt/sandbox/testerr.go
 //	9: func main() {
 //	10:     fmt.Println("Program starting")
-//	11:     err := errors.New("something failed here")
+//	11:     err := errors.Errorf("something failed here")
 //	12:
 //	13:     erro.Debug(err)
 //	14:
@@ -66,7 +66,7 @@ var (
 	fs        = afero.NewOsFs() //fs is at package level because I think it needn't be scoped to loggers
 )
 
-func New(uErr error, format string, a ...interface{}) error {
+func Errorf(uErr error, format string, a ...interface{}) error {
 	DefaultLogger.Overload(1) // Prevents from adding this func to the stack trace
-	return DefaultLogger.New(uErr, format, a...)
+	return DefaultLogger.Errorf(uErr, format, a...)
 }

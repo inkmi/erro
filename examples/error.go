@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"github.com/StephanSchmidt/erro"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -20,18 +21,19 @@ func main() {
 }
 
 func wrapingFunc() {
-	someBigFunction()
+	someBigFunction(2)
 }
 
-func someBigFunction() error {
+func someBigFunction(y int) error {
 	someDumbFunction()
 
 	someSmallFunction()
 
 	someDumbFunction()
 
-	if e := someNastyFunction(); e != nil {
-		return erro.New(e, "Can't open bug database")
+	x := 3
+	if e := someNastyFunction(x, y); e != nil {
+		return erro.Errorf(e, "Can't call nasty function")
 	}
 
 	someSmallFunction()
@@ -44,8 +46,8 @@ func someBigFunction() error {
 func someSmallFunction() {
 }
 
-func someNastyFunction() error {
-	return errors.New("I'm failing for no reason")
+func someNastyFunction(x int, y int) error {
+	return fmt.Errorf("i'm failing for no reason with %d and %d", x, y)
 }
 
 func someDumbFunction() bool {

@@ -15,7 +15,7 @@ var (
 
 // Logger interface allows to log an error, or to print source code lines. Check out NewLogger function to learn more about Logger objects and Config.
 type Logger interface {
-	New(err error, fmt string, a ...interface{}) error
+	Errorf(err error, fmt string, a ...interface{}) error
 	//PrintSource prints lines based on given opts (see PrintSourceOptions type definition)
 	PrintSource(lines []string, opts PrintSourceOptions)
 	//DebugSource debugs a source file
@@ -68,7 +68,7 @@ func NewLogger(cfg *Config) Logger {
 	return &l
 }
 
-func (l *logger) New(uErr error, format string, a ...interface{}) error {
+func (l *logger) Errorf(uErr error, format string, a ...interface{}) error {
 	if DevMode {
 		if l.config.Mode == ModeDisabled {
 			return errors.New("X")
