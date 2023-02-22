@@ -16,8 +16,8 @@ var (
 
 // Logger interface allows to log an error, or to print source code lines. Check out NewLogger function to learn more about Logger objects and Config.
 type Logger interface {
-	Errorf(err error, fmt string, a ...interface{}) error
-	New(err error, errorString string, a ...interface{}) error
+	Errorf(fmt string, err error, a ...interface{}) error
+	New(errorString string, err error, a ...interface{}) error
 	//PrintSource prints lines based on given opts (see PrintSourceOptions type definition)
 	PrintSource(lines []string, opts PrintSourceOptions)
 	//DebugSource debugs a source file
@@ -70,23 +70,22 @@ func NewLogger(cfg *Config) Logger {
 	return &l
 }
 
-func (l *logger) New(uErr error, formatString string, a ...interface{}) error {
-	a = append([]any{uErr}, a...)
+func (l *logger) New(errorString string, source error, a ...interface{}) error {
 	if DevMode {
 		l.Doctor()
-		if uErr == nil {
+		if source == nil {
 			return errors.New("Erro: no error given")
 		}
 
 		stLines := parseStackTrace(1 + l.stackDepthOverload)
 		if stLines == nil || len(stLines) < 1 {
-			l.Printf("Error: %s", uErr)
+			l.Printf("Error: %s", source)
 			l.Printf("Erro tried to debug the error but the stack trace seems empty. If you think this is an error, please open an issue at https://github.com/StephanSchmidt/erro/issues/new and provide us logs to investigate.")
 			return errors.New("Erro: can't find a stack")
 		}
 
 		// print Error
-		l.Printf("Error in %s: %s", stLines[0].CallingObject, color.YellowString(uErr.Error()))
+		l.Printf("Error in %s: %s", stLines[0].CallingObject, color.YellowString(source.Error()))
 		// print Source lines
 		l.DebugSource(stLines[0].SourcePathRef, stLines[0].SourceLineRef)
 
@@ -96,26 +95,54 @@ func (l *logger) New(uErr error, formatString string, a ...interface{}) error {
 
 		l.stackDepthOverload = 0
 	}
-	return errors.New(formatString)
+	n := errors.New(errorString)
+	return errors.Join(n, source)
 }
 
-func (l *logger) Errorf(uErr error, format string, a ...interface{}) error {
-	a = append([]any{uErr}, a...)
+func (l *logger) NewE(myErr error, source error, a ...interface{}) error {
+	a = append([]any{source}, a...)
 	if DevMode {
 		l.Doctor()
-		if uErr == nil {
+		if myErr == nil || source == nil {
+			return errors.New("Erro: no error or no source given")
+		}
+
+		stLines := parseStackTrace(1 + l.stackDepthOverload)
+		if stLines == nil || len(stLines) < 1 {
+			l.Printf("Error: %s", myErr)
+			l.Printf("Erro tried to debug the error but the stack trace seems empty. If you think this is an error, please open an issue at https://github.com/StephanSchmidt/erro/issues/new and provide us logs to investigate.")
+			return errors.New("Erro: can't find a stack")
+		}
+
+		// print Error
+		l.Printf("Error in %s: %s", stLines[0].CallingObject, color.YellowString(source.Error()))
+		// print Source lines
+		l.DebugSource(stLines[0].SourcePathRef, stLines[0].SourceLineRef)
+		// print Stack trace
+		l.Printf(color.BlueString("Stack trace:"))
+		l.printStack(stLines)
+
+		l.stackDepthOverload = 0
+	}
+	return errors.Join(myErr, source)
+}
+
+func (l *logger) Errorf(format string, source error, a ...interface{}) error {
+	if DevMode {
+		l.Doctor()
+		if source == nil {
 			return errors.New("Erro: no error given")
 		}
 
 		stLines := parseStackTrace(1 + l.stackDepthOverload)
 		if stLines == nil || len(stLines) < 1 {
-			l.Printf("Error: %s", uErr)
+			l.Printf("Error: %s", source)
 			l.Printf("Erro tried to debug the error but the stack trace seems empty. If you think this is an error, please open an issue at https://github.com/StephanSchmidt/erro/issues/new and provide us logs to investigate.")
 			return errors.New("Erro can't find a stack")
 		}
 
 		// print Error
-		l.Printf("Error in %s: %s", stLines[0].CallingObject, color.YellowString(uErr.Error()))
+		l.Printf("Error in %s: %s", stLines[0].CallingObject, color.YellowString(source.Error()))
 
 		// Print Source code
 		l.DebugSource(stLines[0].SourcePathRef, stLines[0].SourceLineRef)
@@ -126,7 +153,7 @@ func (l *logger) Errorf(uErr error, format string, a ...interface{}) error {
 
 		l.stackDepthOverload = 0
 	}
-	return fmt.Errorf(format, a)
+	return fmt.Errorf(format, source, a)
 }
 
 // DebugSource prints certain lines of source code of a file for debugging, using (*logger).config as configurations

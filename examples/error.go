@@ -33,7 +33,7 @@ func someBigFunction(y int) error {
 
 	x := 3
 	if e := someNastyFunction(x, y); e != nil {
-		return erro.Errorf(e, "Can't call nasty function")
+		return erro.Errorf("Can't call nasty function", e)
 	}
 
 	someSmallFunction()
