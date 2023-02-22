@@ -75,12 +75,10 @@ func parseAnyStackTrace(stackStr string, deltaDepth int) []StackTraceItem {
 // findFuncLine finds line where func is declared
 func findFuncLine(lines []string, lineNumber int) int {
 	for i := lineNumber; i > 0; i-- {
-		fmt.Printf("Check: %s, %v\n", lines[i], MatchFunc(lines[i]))
 		if MatchFunc(lines[i]) {
 			return i
 		}
 	}
-
 	return -1
 }
 

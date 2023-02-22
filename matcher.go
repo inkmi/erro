@@ -8,7 +8,7 @@ import (
 
 var (
 	regexpFuncLine                   = regexp.MustCompile(`^func\s[a-zA-Z0-9]+\(([^)]*)\)\s+[a-zA-Z0-9]*\s*{`)
-	regexpParseDebugLineParseVarName = regexp.MustCompile(`erro\.Errorf\(([^,]*)|erro\.Mew\(([^,]*)`)
+	regexpParseDebugLineParseVarName = regexp.MustCompile(`erro\.Errorf\(([^,]*)|erro\.New\(([^,]*)`)
 )
 
 func MatchFunc(line string) bool {
@@ -20,6 +20,10 @@ func MatchVarName(line string) *string {
 	if len(reMatches) < 2 {
 		return nil
 	} else {
-		return &reMatches[1]
+		if reMatches[1] == "" {
+			return &reMatches[2]
+		} else {
+			return &reMatches[1]
+		}
 	}
 }

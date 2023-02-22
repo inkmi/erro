@@ -70,3 +70,8 @@ func Errorf(uErr error, format string, a ...interface{}) error {
 	DefaultLogger.Overload(1) // Prevents from adding this func to the stack trace
 	return DefaultLogger.Errorf(uErr, format, a...)
 }
+
+func New(uErr error, errorString string, a ...interface{}) error {
+	DefaultLogger.Overload(1) // Prevents from adding this func to the stack trace
+	return DefaultLogger.New(uErr, errorString, a...)
+}

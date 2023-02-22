@@ -28,3 +28,12 @@ func TestVarName(t *testing.T) {
 		assert.Equal(t, "e", *varName)
 	}
 }
+
+func TestVarNameMust(t *testing.T) {
+	line := "erro.New(e, \"Can't call nasty function\")\n"
+	varName := MatchVarName(line)
+	assert.NotNil(t, varName)
+	if varName != nil {
+		assert.Equal(t, "e", *varName)
+	}
+}

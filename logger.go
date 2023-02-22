@@ -2,6 +2,7 @@ package erro
 
 import (
 	"errors"
+	"fmt"
 	"github.com/fatih/color"
 	"github.com/spf13/afero"
 	"os"
@@ -16,6 +17,7 @@ var (
 // Logger interface allows to log an error, or to print source code lines. Check out NewLogger function to learn more about Logger objects and Config.
 type Logger interface {
 	Errorf(err error, fmt string, a ...interface{}) error
+	New(err error, errorString string, a ...interface{}) error
 	//PrintSource prints lines based on given opts (see PrintSourceOptions type definition)
 	PrintSource(lines []string, opts PrintSourceOptions)
 	//DebugSource debugs a source file
@@ -68,43 +70,63 @@ func NewLogger(cfg *Config) Logger {
 	return &l
 }
 
-func (l *logger) Errorf(uErr error, format string, a ...interface{}) error {
+func (l *logger) New(uErr error, formatString string, a ...interface{}) error {
+	a = append([]any{uErr}, a...)
 	if DevMode {
-		if l.config.Mode == ModeDisabled {
-			return errors.New("X")
-		}
 		l.Doctor()
 		if uErr == nil {
-			return errors.New("X")
+			return errors.New("Erro: no error given")
 		}
 
 		stLines := parseStackTrace(1 + l.stackDepthOverload)
 		if stLines == nil || len(stLines) < 1 {
 			l.Printf("Error: %s", uErr)
-			l.Printf("Errlog tried to debug the error but the stack trace seems empty. If you think this is an error, please open an issue at https://github.com/StephanSchmidt/erro/issues/new and provide us logs to investigate.")
-			return errors.New("X")
+			l.Printf("Erro tried to debug the error but the stack trace seems empty. If you think this is an error, please open an issue at https://github.com/StephanSchmidt/erro/issues/new and provide us logs to investigate.")
+			return errors.New("Erro: can't find a stack")
 		}
 
-		if l.config.PrintError {
-			l.Printf("Error in %s: %s", stLines[0].CallingObject, color.YellowString(uErr.Error()))
-		}
+		// print Error
+		l.Printf("Error in %s: %s", stLines[0].CallingObject, color.YellowString(uErr.Error()))
+		// print Source lines
+		l.DebugSource(stLines[0].SourcePathRef, stLines[0].SourceLineRef)
 
-		if l.config.PrintSource {
-			l.DebugSource(stLines[0].SourcePathRef, stLines[0].SourceLineRef)
-		}
-
-		if l.config.PrintStack {
-			l.Printf(color.BlueString("Stack trace:"))
-			l.printStack(stLines)
-		}
-
-		if l.config.ExitOnDebugSuccess {
-			os.Exit(1)
-		}
+		// print Stack trace
+		l.Printf(color.BlueString("Stack trace:"))
+		l.printStack(stLines)
 
 		l.stackDepthOverload = 0
 	}
-	return errors.New("X")
+	return errors.New(formatString)
+}
+
+func (l *logger) Errorf(uErr error, format string, a ...interface{}) error {
+	a = append([]any{uErr}, a...)
+	if DevMode {
+		l.Doctor()
+		if uErr == nil {
+			return errors.New("Erro: no error given")
+		}
+
+		stLines := parseStackTrace(1 + l.stackDepthOverload)
+		if stLines == nil || len(stLines) < 1 {
+			l.Printf("Error: %s", uErr)
+			l.Printf("Erro tried to debug the error but the stack trace seems empty. If you think this is an error, please open an issue at https://github.com/StephanSchmidt/erro/issues/new and provide us logs to investigate.")
+			return errors.New("Erro can't find a stack")
+		}
+
+		// print Error
+		l.Printf("Error in %s: %s", stLines[0].CallingObject, color.YellowString(uErr.Error()))
+
+		// Print Source code
+		l.DebugSource(stLines[0].SourcePathRef, stLines[0].SourceLineRef)
+
+		// Print Stack Trace
+		l.Printf(color.BlueString("Stack trace:"))
+		l.printStack(stLines)
+
+		l.stackDepthOverload = 0
+	}
+	return fmt.Errorf(format, a)
 }
 
 // DebugSource prints certain lines of source code of a file for debugging, using (*logger).config as configurations
