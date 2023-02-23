@@ -85,3 +85,14 @@ func TestExtractArgsWithFunctionCall(t *testing.T) {
 	assert.Equal(t, "b", argNames[3])
 	assert.Equal(t, "c", argNames[4])
 }
+
+func TestSplitWithBraces(t *testing.T) {
+	t.Parallel()
+	line := `add(2,3), b, c`
+	res := splitWithBraces(line, ',')
+
+	assert.Equal(t, 3, len(res))
+	assert.Equal(t, "add(2,3)", res[0])
+	assert.Equal(t, "b", res[1])
+	assert.Equal(t, "c", res[2])
+}

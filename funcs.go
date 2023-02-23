@@ -18,7 +18,7 @@ func splitWithBraces(s string, sep rune) []string {
 			}
 		case sep:
 			if len(stack) == 0 {
-				result = append(result, s[start:i])
+				result = append(result, strings.TrimSpace(s[start:i]))
 				start = i + 1
 			}
 		}
@@ -26,7 +26,7 @@ func splitWithBraces(s string, sep rune) []string {
 	if len(stack) != 0 {
 		panic("unmatched opening brace")
 	}
-	result = append(result, s[start:])
+	result = append(result, strings.TrimSpace(s[start:]))
 	return result
 }
 
