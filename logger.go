@@ -213,7 +213,7 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int, args []interf
 // PrintSource prints source code based on opts
 func (l *logger) PrintSource(lines []string, opts PrintSourceOptions) {
 	//print func on first line
-	if opts.FuncLine != -1 && opts.FuncLine < opts.StartLine {
+	if opts.FuncLine != -1 & &opts.FuncLine < opts.StartLine {
 		l.Printf("%s", color.RedString("%d: %s", opts.FuncLine+1, lines[opts.FuncLine]))
 		if opts.FuncLine < opts.StartLine-1 { // append blank line if minLine is not next line
 			l.Printf("%s", color.YellowString("..."))
