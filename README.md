@@ -22,7 +22,7 @@ go get github.com/StephanSchmidt/erro
 
 ## License information
 
-Click the following badge to open LICENSE information.
+MIT License
 
 ## Contributors
 
