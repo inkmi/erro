@@ -12,6 +12,11 @@ Use Erro to improve error logging and **speed up  debugging while you create ama
 - Pretty stack trace
 - **No-op mode** for production
 
+### Example Output
+
+![Erro example outpuit](https://raw.githubusercontent.com/StephanSchmidt/erro/master/ErroExample.png)
+
+
 ## Get started
 
 ### Install
