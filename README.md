@@ -1,21 +1,22 @@
+<img src="https://raw.githubusercontent.com/StephanSchmidt/erro/master/ErroLogo.png" width="300">
+
 # Erro
 
-Forked from [snwfdhmp/errlog](https://github.com/snwfdhmp/errlog) because I needed more of an error library that is
-developer friendly than a debugging tool.
+*Forked from [snwfdhmp/errlog](https://github.com/snwfdhmp/errlog)*
+
+Erro is a simple libary that helps finding the reasons for errors in your Golang code. When an error is created through **erro**, the source of the failing code is shown together with the stack trace and the variables that led to the error.
+
+![Erro example outpuit](https://raw.githubusercontent.com/StephanSchmidt/erro/master/ErroExample.png)
+
 
 ## Introduction
 
-Use Erro to improve error logging and **speed up  debugging while you create amazing code** :
+Use Erro to help understanding errors and **speed up debugging while you create amazing code** :
 
 - Highlight source code
 - **Detect and point out** which func call is causing the fail
 - Pretty stack trace
 - **No-op mode** for production
-
-### Example Output
-
-![Erro example outpuit](https://raw.githubusercontent.com/StephanSchmidt/erro/master/ErroExample.png)
-
 
 ## Get started
 
