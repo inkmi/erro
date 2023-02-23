@@ -218,7 +218,7 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int, args []interf
 }
 
 func diff(first []string, second []string) []string {
-	diff := []string{}
+	var diff []string
 	for _, str := range first {
 		if !contains(second, str) {
 			diff = append(diff, str)
