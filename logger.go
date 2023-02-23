@@ -188,6 +188,7 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int, args []interf
 
 	//try to find failing line if any
 	failingLineIndex, columnStart, columnEnd, argNames := findFailingLine(lines, funcLine, debugLineNumber)
+	failingArgs := extractArgs(lines[failingLineIndex][columnStart:])
 
 	if failingLineIndex != -1 {
 		l.Printf("line %d of %s:%d", failingLineIndex+1, filepathShort, failingLineIndex+1)
@@ -204,10 +205,35 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int, args []interf
 		EndLine:   maxLine,
 	})
 
-	l.Printf(color.BlueString("Variables:"))
-	for i, arg := range argNames {
-		l.Printf("  %v : %v", arg, args[i])
+	if len(argNames) > 0 {
+		l.Printf(color.BlueString("Variables:"))
+		for i, arg := range argNames {
+			l.Printf("  %v : %v", arg, args[i])
+		}
+		// Print all args that were in the failing call but not in the Errorf/New call
+		for _, arg := range diff(failingArgs, argNames) {
+			l.Printf("  %v : ?", arg)
+		}
 	}
+}
+
+func diff(first []string, second []string) []string {
+	diff := []string{}
+	for _, str := range first {
+		if !contains(second, str) {
+			diff = append(diff, str)
+		}
+	}
+	return diff
+}
+
+func contains(slice []string, str string) bool {
+	for _, v := range slice {
+		if v == str {
+			return true
+		}
+	}
+	return false
 }
 
 // PrintSource prints source code based on opts

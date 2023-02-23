@@ -21,9 +21,6 @@ func ArgNames(line string) []string {
 	matches := len(reMatches)
 	if matches > 0 {
 		args := extractArgs(line[matches:])
-		for i, _ := range args {
-			args[i] = strings.TrimSpace(args[i])
-		}
 		return args
 	} else {
 		return nil
