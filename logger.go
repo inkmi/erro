@@ -21,7 +21,7 @@ type Logger interface {
 	//PrintSource prints lines based on given opts (see PrintSourceOptions type definition)
 	PrintSource(lines []string, opts PrintSourceOptions)
 	//DebugSource debugs a source file
-	DebugSource(filename string, lineNumber int)
+	DebugSource(filename string, lineNumber int, args []any)
 	//SetConfig replaces current config with the given one
 	SetConfig(cfg *Config)
 	//Config returns current config
@@ -87,7 +87,7 @@ func (l *logger) New(errorString string, source error, a ...interface{}) error {
 		// print Error
 		l.Printf("Error in %s: %s", stLines[0].CallingObject, color.YellowString(source.Error()))
 		// print Source lines
-		l.DebugSource(stLines[0].SourcePathRef, stLines[0].SourceLineRef)
+		l.DebugSource(stLines[0].SourcePathRef, stLines[0].SourceLineRef, a)
 
 		// print Stack trace
 		l.Printf(color.BlueString("Stack trace:"))
@@ -116,7 +116,7 @@ func (l *logger) NewE(myErr error, source error, a ...interface{}) error {
 		// print Error
 		l.Printf("Error in %s: %s", stLines[0].CallingObject, color.YellowString(source.Error()))
 		// print Source lines
-		l.DebugSource(stLines[0].SourcePathRef, stLines[0].SourceLineRef)
+		l.DebugSource(stLines[0].SourcePathRef, stLines[0].SourceLineRef, a)
 		// print Stack trace
 		l.Printf(color.BlueString("Stack trace:"))
 		l.printStack(stLines)
@@ -126,7 +126,7 @@ func (l *logger) NewE(myErr error, source error, a ...interface{}) error {
 	return errors.Join(myErr, source)
 }
 
-func (l *logger) Errorf(format string, source error, a ...interface{}) error {
+func (l *logger) Errorf(format string, source error, a ...any) error {
 	if DevMode {
 		l.Doctor()
 		if source == nil {
@@ -144,7 +144,7 @@ func (l *logger) Errorf(format string, source error, a ...interface{}) error {
 		l.Printf("Error in %s: %s", stLines[0].CallingObject, color.YellowString(source.Error()))
 
 		// Print Source code
-		l.DebugSource(stLines[0].SourcePathRef, stLines[0].SourceLineRef)
+		l.DebugSource(stLines[0].SourcePathRef, stLines[0].SourceLineRef, a)
 
 		// Print Stack Trace
 		l.Printf(color.BlueString("Stack trace:"))
@@ -156,7 +156,7 @@ func (l *logger) Errorf(format string, source error, a ...interface{}) error {
 }
 
 // DebugSource prints certain lines of source code of a file for debugging, using (*logger).config as configurations
-func (l *logger) DebugSource(filepath string, debugLineNumber int) {
+func (l *logger) DebugSource(filepath string, debugLineNumber int, args []interface{}) {
 	filepathShort := filepath
 	if gopath != "" {
 		filepathShort = strings.Replace(filepath, gopath+"/src/", "", -1)
@@ -187,7 +187,7 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int) {
 	}
 
 	//try to find failing line if any
-	failingLineIndex, columnStart, columnEnd := findFailingLine(lines, funcLine, debugLineNumber)
+	failingLineIndex, columnStart, columnEnd, argNames := findFailingLine(lines, funcLine, debugLineNumber)
 
 	if failingLineIndex != -1 {
 		l.Printf("line %d of %s:%d", failingLineIndex+1, filepathShort, failingLineIndex+1)
@@ -203,6 +203,11 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int) {
 		StartLine: minLine,
 		EndLine:   maxLine,
 	})
+
+	l.Printf(color.BlueString("Variables:"))
+	for i, arg := range argNames {
+		l.Printf("  %v : %v", arg, args[i])
+	}
 }
 
 // PrintSource prints source code based on opts
