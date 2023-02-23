@@ -4,7 +4,7 @@
 
 *Forked from [snwfdhmp/errlog](https://github.com/snwfdhmp/errlog)*
 
-Erro is a simple libary that helps finding the reasons for errors in your Golang code. When an error is created through **erro**, the source of the failing code is shown together with the stack trace and the variables that led to the error.
+Erro (pronounced *'arrow'*) is a simple libary that helps finding the reasons for errors in your Golang code. When an error is created through **erro**, the source of the failing code is shown together with the stack trace and the variables that led to the error.
 
 ![Erro example outpuit](https://raw.githubusercontent.com/StephanSchmidt/erro/master/ErroExample.png)
 
