@@ -63,3 +63,25 @@ func TestFuncArgNames(t *testing.T) {
 	assert.Equal(t, "b", argNames[3])
 	assert.Equal(t, "c", argNames[4])
 }
+
+func TestExtractArgs(t *testing.T) {
+	t.Parallel()
+	line := `x := call("abc", err, a, b, c)`
+	argNames := extractArgs(line)
+	assert.Equal(t, 5, len(argNames))
+	assert.Equal(t, "err", argNames[1])
+	assert.Equal(t, "a", argNames[2])
+	assert.Equal(t, "b", argNames[3])
+	assert.Equal(t, "c", argNames[4])
+}
+
+func TestExtractArgsWithFunctionCall(t *testing.T) {
+	t.Parallel()
+	line := `x := call("abc", err, add(2,3), b, c)`
+	argNames := extractArgs(line)
+	assert.Equal(t, 5, len(argNames))
+	assert.Equal(t, "err", argNames[1])
+	assert.Equal(t, "add(2,3)", argNames[2])
+	assert.Equal(t, "b", argNames[3])
+	assert.Equal(t, "c", argNames[4])
+}
