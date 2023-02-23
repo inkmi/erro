@@ -1,19 +1,20 @@
 package erro
 
 import (
-	"errors"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func TestErrorfIsSource(t *testing.T) {
-	se := errors.New("file not found")
-	ne := Errorf("Error: %w", se)
-	assert.True(t, errors.Is(ne, se))
+func TestDiff(t *testing.T) {
+	s1 := []string{"a", "b", "c"}
+	s2 := []string{"b", "d", "e"}
+	res := diff(s1, s2)
+	exp := []string{"a", "c"}
+	assert.Equal(t, exp, res)
 }
 
-func TestNewIsSource(t *testing.T) {
-	se := errors.New("file not found")
-	ne := New("Can't do", se)
-	assert.True(t, errors.Is(ne, se))
+func TestContains(t *testing.T) {
+	s := []string{"a", "b", "c"}
+	assert.True(t, contains(s, "a"))
+	assert.False(t, contains(s, "z"))
 }
