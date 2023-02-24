@@ -212,21 +212,21 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int, args []interf
 	if len(argNames) > 0 {
 		l.Printf(color.BlueString("Variables:"))
 		for i, arg := range argNames {
-			l.Printf("  %v : %v", arg, args[i])
+			l.Printf(" %v : %v", arg, args[i])
 			lastWrite := lastWriteToVar(funcSrc, arg)
 			if lastWrite > -1 {
 				srcLine := lastWrite + funcLine
-				l.Printf(" %d : %v", srcLine, strings.TrimSpace(src[srcLine-1]))
+				l.Printf(" ╰╴ %d : %v", srcLine, strings.TrimSpace(src[srcLine-1]))
 			}
 
 		}
 		// Print all args that were in the failing call but not in the Errorf/New call
 		for _, arg := range diff(failingArgs, argNames) {
-			l.Printf("  %v : ?", arg)
+			l.Printf(" %v : ?", arg)
 			lastWrite := lastWriteToVar(funcSrc, arg)
 			if lastWrite > -1 {
 				srcLine := lastWrite + funcLine
-				l.Printf(" %d : %v", srcLine, strings.TrimSpace(src[srcLine-1]))
+				l.Printf(" ╰╴ %d : %v", srcLine, strings.TrimSpace(src[srcLine-1]))
 			}
 		}
 	}
