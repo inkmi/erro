@@ -25,13 +25,14 @@ func wrapingFunc() {
 }
 
 func someBigFunction(y int) error {
+	x := 3
 	someDumbFunction()
 
 	someSmallFunction()
 
 	someDumbFunction()
 
-	x := 3
+	x = 2
 	if e := someNastyFunction(x, y); e != nil {
 		return erro.Errorf("Can't call nasty function", e, x)
 	}

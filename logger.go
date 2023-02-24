@@ -178,6 +178,7 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int, args []interf
 	deleteBlankLinesFromRange(lines, &minLine, &maxLine)
 
 	//free some memory from unused values
+	src := lines
 	lines = lines[:maxLine+1]
 
 	//find func line and adjust minLine if below
@@ -185,6 +186,11 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int, args []interf
 	if funcLine > minLine {
 		minLine = funcLine + 1
 	}
+
+	fmt.Println(strings.Join(src[funcLine:FindEndOfFunction(src, funcLine)+1], "\n"))
+
+	// Use AST instead of strings and []string in the future
+	funcSrc := strings.Join(src[funcLine:FindEndOfFunction(src, funcLine)+1], "\n")
 
 	//try to find failing line if any
 	failingLineIndex, columnStart, columnEnd, argNames := findFailingLine(lines, funcLine, debugLineNumber)
@@ -209,10 +215,21 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int, args []interf
 		l.Printf(color.BlueString("Variables:"))
 		for i, arg := range argNames {
 			l.Printf("  %v : %v", arg, args[i])
+			lastWrite := lastWriteToVar(funcSrc, arg)
+			if lastWrite > -1 {
+				srcLine := lastWrite + funcLine
+				l.Printf("  %d : %v", srcLine, strings.TrimSpace(src[srcLine-1]))
+			}
+
 		}
 		// Print all args that were in the failing call but not in the Errorf/New call
 		for _, arg := range diff(failingArgs, argNames) {
 			l.Printf("  %v : ?", arg)
+			lastWrite := lastWriteToVar(funcSrc, arg)
+			if lastWrite > -1 {
+				srcLine := lastWrite + funcLine
+				l.Printf("  %d : %v", srcLine, strings.TrimSpace(src[srcLine-1]))
+			}
 		}
 	}
 }

@@ -12,7 +12,7 @@ var (
 	/*
 		Note for contributors/users : these regexp have been made by me, taking my own source code as example for finding the right one to use.
 		I use gofmt for source code formatting, that means this will work on most cases.
-		Unfortunately, I didn't check against other code formatting tools, so it may require some evolution.
+		Unfortunately, I didn't lastWriteToVar against other code formatting tools, so it may require some evolution.
 		Feel free to create an issue or send a PR.
 	*/
 	regexpParseStack        = regexp.MustCompile(`((?:(?:[a-zA-Z._-]+)[/])*(?:[*a-zA-Z0-9_]*\.)+[a-zA-Z0-9_]+)\(((?:(?:0x[0-9a-f]+)|(?:...)[,\s]*)+)*\)[\s]+([/:\-a-zA-Z0-9\._]+)[:]([0-9]+)[\s](?:\+0x([0-9a-f]+))*`)
