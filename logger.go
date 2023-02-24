@@ -218,7 +218,7 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int, args []interf
 			lastWrite := lastWriteToVar(funcSrc, arg)
 			if lastWrite > -1 {
 				srcLine := lastWrite + funcLine
-				l.Printf("  %d : %v", srcLine, strings.TrimSpace(src[srcLine-1]))
+				l.Printf(" %d : %v", srcLine, strings.TrimSpace(src[srcLine-1]))
 			}
 
 		}
@@ -228,7 +228,7 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int, args []interf
 			lastWrite := lastWriteToVar(funcSrc, arg)
 			if lastWrite > -1 {
 				srcLine := lastWrite + funcLine
-				l.Printf("  %d : %v", srcLine, strings.TrimSpace(src[srcLine-1]))
+				l.Printf(" %d : %v", srcLine, strings.TrimSpace(src[srcLine-1]))
 			}
 		}
 	}
