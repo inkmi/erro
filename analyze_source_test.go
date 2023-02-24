@@ -1,7 +1,6 @@
 package erro
 
 import (
-	"github.com/davecgh/go-spew/spew"
 	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
@@ -23,7 +22,7 @@ func add(y int) int {
    x := 3
    return y + x
 }`
-	lastWrite := lastWriteToVar(src, "y")
+	lastWrite := lastWriteToVar(src, "z")
 	assert.Equal(t, -1, lastWrite)
 }
 
@@ -54,7 +53,6 @@ func sub(y int) int {
 }
 `
 	lines := strings.Split(src, "\n")
-	spew.Dump(lines)
 	endOfFunction := FindEndOfFunction(lines, 1)
 	assert.Equal(t, 7, endOfFunction)
 }
