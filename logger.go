@@ -187,8 +187,6 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int, args []interf
 		minLine = funcLine + 1
 	}
 
-	fmt.Println(strings.Join(src[funcLine:FindEndOfFunction(src, funcLine)+1], "\n"))
-
 	// Use AST instead of strings and []string in the future
 	funcSrc := strings.Join(src[funcLine:FindEndOfFunction(src, funcLine)+1], "\n")
 
@@ -328,6 +326,7 @@ func (l *logger) printStack(stLines []StackTraceItem) {
 
 // Printf is the function used to log
 func (l *logger) Printf(format string, data ...interface{}) {
+
 	if LogTo != nil {
 		(*LogTo).Debug().Msgf(format, data...)
 	}

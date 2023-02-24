@@ -42,6 +42,16 @@ func lastWriteToVar(s string, varName string) int {
 	lastLine := -1
 	ast.Inspect(node, func(n ast.Node) bool {
 		switch n.(type) {
+		case *ast.FuncDecl:
+			f := n.(*ast.FuncDecl)
+			for _, field := range f.Type.Params.List {
+				for _, n := range field.Names {
+					if n.Name == varName {
+						pos := fset.Position(f.Pos())
+						lastLine = pos.Line - 1
+					}
+				}
+			}
 		case *ast.AssignStmt:
 			for i, lhs := range n.(*ast.AssignStmt).Lhs {
 				ident, ok := lhs.(*ast.Ident)
