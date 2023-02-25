@@ -232,78 +232,13 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int, args []interf
 	}
 }
 
-func diff(first []string, second []string) []string {
-	var diff []string
-	for _, str := range first {
-		if !contains(second, str) {
-			diff = append(diff, str)
-		}
-	}
-	return diff
-}
-
-func contains(slice []string, str string) bool {
-	for _, v := range slice {
-		if v == str {
-			return true
-		}
-	}
-	return false
-}
-
 // PrintSource prints source code based on opts
 func (l *logger) PrintSource(lines []string, opts PrintSourceOptions) {
-	//print func on first line
-	if opts.FuncLine != -1 && opts.FuncLine < opts.StartLine {
-		l.Printf("%s", color.RedString("%d: %s", opts.FuncLine+1, lines[opts.FuncLine]))
-		if opts.FuncLine < opts.StartLine-1 { // append blank line if minLine is not next line
-			l.Printf("%s", color.YellowString("..."))
-		}
-	}
-
-	for i := opts.StartLine; i < opts.EndLine; i++ {
-		if _, ok := opts.Highlighted[i]; !ok || len(opts.Highlighted[i]) != 2 {
-			l.Printf("%d: %s", i+1, color.YellowString(lines[i]))
-			continue
-		}
-
-		hlStart := max(opts.Highlighted[i][0], 0)          //highlight column start
-		hlEnd := min(opts.Highlighted[i][1], len(lines)-1) //highlight column end
-		l.Printf("%d: %s%s%s", i+1, color.YellowString(lines[i][:hlStart]), color.RedString(lines[i][hlStart:hlEnd+1]), color.YellowString(lines[i][hlEnd+1:]))
-	}
+	PrintSource(lines, opts, l)
 }
 
-func (l *logger) Doctor() (neededDoctor bool) {
-	neededDoctor = false
-
-	if l.config.PrintFunc == nil {
-		neededDoctor = true
-		if LogTo != nil {
-			(*LogTo).Debug().Msg("PrintFunc not set for this logger. Replacing with DefaultLoggerPrintFunc.")
-		}
-		l.config.PrintFunc = DefaultLoggerPrintFunc
-	}
-
-	if l.config.LinesBefore < 0 {
-		neededDoctor = true
-		if LogTo != nil {
-			(*LogTo).Debug().Msgf("LinesBefore is '%d' but should not be <0. Setting to 0.", l.config.LinesBefore)
-		}
-		l.config.LinesBefore = 0
-	}
-
-	if l.config.LinesAfter < 0 {
-		neededDoctor = true
-		if LogTo != nil {
-			(*LogTo).Debug().Msgf("LinesAfters is '%d' but should not be <0. Setting to 0.", l.config.LinesAfter)
-		}
-		l.config.LinesAfter = 0
-	}
-
-	if neededDoctor && !debugMode && LogTo != nil {
-		(*LogTo).Debug().Msgf("erro: Doctor() has detected and fixed some problems on your logger configuration. It might have modified your configuration. Check logs by enabling debug. 'erro.SetDebugMode(true)'.")
-	}
-	return
+func (l *logger) Doctor() bool {
+	return Doctor(l)
 }
 
 func (l *logger) printStack(stLines []StackTraceItem) {
@@ -326,7 +261,6 @@ func (l *logger) printStack(stLines []StackTraceItem) {
 
 // Printf is the function used to log
 func (l *logger) Printf(format string, data ...interface{}) {
-
 	if LogTo != nil {
 		(*LogTo).Debug().Msgf(format, data...)
 	}

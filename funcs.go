@@ -2,6 +2,16 @@ package erro
 
 import "strings"
 
+// findFuncLine finds line where func is declared
+func findFuncLine(lines []string, lineNumber int) int {
+	for i := lineNumber; i > 0; i-- {
+		if MatchFunc(lines[i]) {
+			return i
+		}
+	}
+	return -1
+}
+
 func splitWithBraces(s string, sep rune) []string {
 	var result []string
 	var stack []rune

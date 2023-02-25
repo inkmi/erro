@@ -72,16 +72,6 @@ func parseAnyStackTrace(stackStr string, deltaDepth int) []StackTraceItem {
 	return sti
 }
 
-// findFuncLine finds line where func is declared
-func findFuncLine(lines []string, lineNumber int) int {
-	for i := lineNumber; i > 0; i-- {
-		if MatchFunc(lines[i]) {
-			return i
-		}
-	}
-	return -1
-}
-
 // findFailingLine finds line where <var> is defined, if Debug(<var>) is present on lines[debugLine]. funcLine serves as max
 func findFailingLine(lines []string, funcLine int, debugLine int) (failingLineIndex, columnStart, columnEnd int, argNames []string) {
 	failingLineIndex = -1 //init error flag
