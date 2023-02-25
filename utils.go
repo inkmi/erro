@@ -4,15 +4,6 @@ import (
 	"strings"
 )
 
-func isIntInSlice(i int, s []int) bool {
-	for vi := range s {
-		if s[vi] == i {
-			return true
-		}
-	}
-	return false
-}
-
 // deleteBlankLinesFromRange increments and decrements respectively start and end so they are not representing an empty line (in slice lines)
 func deleteBlankLinesFromRange(lines []string, start, end *int) {
 	//clean from out of range values

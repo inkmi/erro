@@ -37,6 +37,17 @@ func add(y int) int {
 	assert.Equal(t, 4, lastWrite)
 }
 
+func TestLastWriteFunc(t *testing.T) {
+	src := `
+func add(y int) int {
+   x := 2
+   x = 3
+   return y + x
+}`
+	lastWrite := lastWriteToVar(src, "y")
+	assert.Equal(t, 2, lastWrite)
+}
+
 func TestFindEndOfFunction(t *testing.T) {
 	src := `
 func add(y int) int {

@@ -96,3 +96,25 @@ func TestSplitWithBraces(t *testing.T) {
 	assert.Equal(t, "b", res[1])
 	assert.Equal(t, "c", res[2])
 }
+
+func TestFindFuncLine(t *testing.T) {
+	lines := []string{
+		"x := 2",
+		"func add(x int) {",
+		"  return x + 1",
+		"}",
+	}
+	funcLine := findFuncLine(lines, 1)
+	assert.Equal(t, 1, funcLine)
+}
+
+func TestFindFuncLineBeforeFuncReturnsError(t *testing.T) {
+	lines := []string{
+		"x := 2",
+		"func add(x int) {",
+		"  return x + 1",
+		"}",
+	}
+	funcLine := findFuncLine(lines, 0)
+	assert.Equal(t, -1, funcLine)
+}
