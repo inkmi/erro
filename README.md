@@ -2,6 +2,8 @@
 
 # Erro
 
+![Build state](https://github.com/StephanSchmidt/erro/actions/workflows/test.yml/badge.svg)
+
 *Forked from [snwfdhmp/errlog](https://github.com/snwfdhmp/errlog)*
 
 Erro (pronounced *'arrow'*) is a simple libary that helps finding the reasons for errors in your Golang code. When an error is created through **erro**, the source of the failing code is shown together with the stack trace and the variables that led to the error.
