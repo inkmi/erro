@@ -4,14 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/fatih/color"
-	"github.com/spf13/afero"
-	"os"
 	"path/filepath"
 	"strings"
-)
-
-var (
-	gopath = os.Getenv("GOPATH")
 )
 
 // Logger interface allows to log an error, or to print source code lines. Check out NewLogger function to learn more about Logger objects and Config.
@@ -208,26 +202,6 @@ func FindUsedArgs(argNames []string, funcSrc string, varValues []interface{}, sr
 		usedVars = append(usedVars, uv)
 	}
 	return usedVars
-}
-
-func ReadSource(filepath string) []string {
-	b, err := afero.ReadFile(fs, filepath)
-	if err != nil {
-		if LogTo != nil {
-			(*LogTo).Debug().Msgf("erro: cannot read file '%s': %s. If sources are not reachable in this environment, you should set PrintSource=false in logger config.", filepath, err)
-		}
-		return nil
-	}
-	lines := strings.Split(string(b), "\n")
-	return lines
-}
-
-func GetShortFilePath(filepath string) string {
-	filepathShort := filepath
-	if gopath != "" {
-		filepathShort = strings.Replace(filepath, gopath+"/src/", "", -1)
-	}
-	return filepathShort
 }
 
 // PrintSource prints source code based on opts
