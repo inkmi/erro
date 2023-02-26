@@ -71,62 +71,31 @@ func NewLogger(cfg *Config) Logger {
 }
 
 func (l *logger) New(errorString string, source error, a ...interface{}) error {
-	if DevMode {
-		l.Doctor()
-		if source == nil {
-			return errors.New("Erro: no error given")
-		}
-
-		stLines := parseStackTrace(1 + l.stackDepthOverload)
-		if stLines == nil || len(stLines) < 1 {
-			l.Printf("Error: %s", source)
-			l.Printf("Erro tried to debug the error but the stack trace seems empty. If you think this is an error, please open an issue at https://github.com/StephanSchmidt/erro/issues/new and provide us logs to investigate.")
-			return errors.New("Erro: can't find a stack")
-		}
-
-		// print Error
-		l.Printf("Error in %s: %s", stLines[0].CallingObject, color.YellowString(source.Error()))
-		// print Source lines
-		l.DebugSource(stLines[0].SourcePathRef, stLines[0].SourceLineRef, a)
-
-		// print Stack trace
-		l.Printf(color.BlueString("Stack trace:"))
-		l.printStack(stLines)
-
-		l.stackDepthOverload = 0
+	err := PrintErro(l, source, a)
+	if err != nil {
+		return err
 	}
 	n := errors.New(errorString)
 	return errors.Join(n, source)
 }
 
 func (l *logger) NewE(myErr error, source error, a ...interface{}) error {
-	if DevMode {
-		l.Doctor()
-		if myErr == nil || source == nil {
-			return errors.New("Erro: no error or no source given")
-		}
-
-		stLines := parseStackTrace(1 + l.stackDepthOverload)
-		if stLines == nil || len(stLines) < 1 {
-			l.Printf("Error: %s", myErr)
-			l.Printf("Erro tried to debug the error but the stack trace seems empty. If you think this is an error, please open an issue at https://github.com/StephanSchmidt/erro/issues/new and provide us logs to investigate.")
-			return errors.New("Erro: can't find a stack")
-		}
-
-		// print Error
-		l.Printf("Error in %s: %s", stLines[0].CallingObject, color.YellowString(source.Error()))
-		// print Source lines
-		l.DebugSource(stLines[0].SourcePathRef, stLines[0].SourceLineRef, a)
-		// print Stack trace
-		l.Printf(color.BlueString("Stack trace:"))
-		l.printStack(stLines)
-
-		l.stackDepthOverload = 0
+	err := PrintErro(l, source, a)
+	if err != nil {
+		return err
 	}
 	return errors.Join(myErr, source)
 }
 
 func (l *logger) Errorf(format string, source error, a ...any) error {
+	err := PrintErro(l, source, a)
+	if err != nil {
+		return err
+	}
+	return fmt.Errorf(format, source, a)
+}
+
+func PrintErro(l *logger, source error, a []any) error {
 	if DevMode {
 		l.Doctor()
 		if source == nil {
@@ -152,7 +121,7 @@ func (l *logger) Errorf(format string, source error, a ...any) error {
 
 		l.stackDepthOverload = 0
 	}
-	return fmt.Errorf(format, source, a)
+	return nil
 }
 
 // DebugSource prints certain lines of source code of a file for debugging, using (*logger).config as configurations
@@ -185,7 +154,10 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int, varValues []i
 
 	//try to find failing line if any
 	failingLineIndex, columnStart, columnEnd, argNames := findFailingLine(lines, funcLine, debugLineNumber)
-	failingArgs := extractArgs(lines[failingLineIndex][columnStart:])
+	var failingArgs []string
+	if failingLineIndex > -1 {
+		failingArgs = extractArgs(lines[failingLineIndex][columnStart:])
+	}
 
 	if failingLineIndex != -1 {
 		filepathShort := GetShortFilePath(filepath)
