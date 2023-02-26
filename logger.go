@@ -112,13 +112,6 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int, varValues []i
 	minLine := debugLineNumber - l.config.LinesBefore
 	maxLine := debugLineNumber + l.config.LinesAfter
 
-	//delete blank lines from range and clean range if out of lines range
-	deleteBlankLinesFromRange(lines, &minLine, &maxLine)
-
-	src := lines
-	//free some memory from unused values
-	//lines = lines[:maxLine+1]
-
 	//find func line and adjust minLine if below
 	funcLine := findFuncLine(lines, debugLineNumber)
 	if funcLine > minLine {
@@ -126,7 +119,7 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int, varValues []i
 	}
 
 	// Use AST instead of strings and []string in the future
-	funcSrc := strings.Join(src[funcLine:FindEndOfFunction(src, funcLine)+1], "\n")
+	funcSrc := strings.Join(lines[funcLine:FindEndOfFunction(lines, funcLine)+1], "\n")
 
 	//try to find failing line if any
 	failingLineIndex, columnStart, columnEnd, argNames := findFailingLine(lines, funcLine, debugLineNumber)
@@ -152,7 +145,7 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int, varValues []i
 		EndLine:   maxLine,
 	})
 
-	PrintVariables(l, FindUsedArgs(argNames, funcSrc, varValues, src, funcLine, failingArgs))
+	PrintVariables(l, FindUsedArgs(argNames, funcSrc, varValues, lines, funcLine, failingArgs))
 }
 
 func FindUsedArgs(argNames []string, funcSrc string, varValues []interface{}, src []string, funcLine int, failingArgs []string) []UsedVar {
