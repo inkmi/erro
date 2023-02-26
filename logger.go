@@ -170,8 +170,7 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int, varValues []i
 		EndLine:   maxLine,
 	})
 
-	usedVars := FindUsedArgs(argNames, funcSrc, varValues, src, funcLine, failingArgs)
-	PrintVariables(l, usedVars)
+	PrintVariables(l, FindUsedArgs(argNames, funcSrc, varValues, src, funcLine, failingArgs))
 }
 
 func FindUsedArgs(argNames []string, funcSrc string, varValues []interface{}, src []string, funcLine int, failingArgs []string) []UsedVar {
