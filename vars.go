@@ -9,7 +9,7 @@ type UsedVar struct {
 	SourceLastWrite string
 }
 
-func PrintVariables(l *logger, vars []UsedVar) {
+func printVariables(l *logger, vars []UsedVar) {
 	if len(vars) > 0 {
 		l.Printf(color.BlueString("Variables:"))
 		for _, arg := range vars {

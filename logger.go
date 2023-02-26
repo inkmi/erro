@@ -48,7 +48,7 @@ func NewLogger(cfg *Config) Logger {
 }
 
 func (l *logger) New(errorString string, source error, a ...interface{}) error {
-	err := PrintErro(l, source, a)
+	err := printErro(l, source, a)
 	if err != nil {
 		return err
 	}
@@ -57,7 +57,7 @@ func (l *logger) New(errorString string, source error, a ...interface{}) error {
 }
 
 func (l *logger) NewE(myErr error, source error, a ...interface{}) error {
-	err := PrintErro(l, source, a)
+	err := printErro(l, source, a)
 	if err != nil {
 		return err
 	}
@@ -65,14 +65,14 @@ func (l *logger) NewE(myErr error, source error, a ...interface{}) error {
 }
 
 func (l *logger) Errorf(format string, source error, a ...any) error {
-	err := PrintErro(l, source, a)
+	err := printErro(l, source, a)
 	if err != nil {
 		return err
 	}
 	return fmt.Errorf(format, source, a)
 }
 
-func PrintErro(l *logger, source error, a []any) error {
+func printErro(l *logger, source error, a []any) error {
 	if DevMode {
 		if source == nil {
 			return errors.New("erro: no error given")
@@ -85,6 +85,7 @@ func PrintErro(l *logger, source error, a []any) error {
 		}
 		// print Error
 		l.Printf("Error in %s: %s", stLines[0].CallingObject, color.YellowString(source.Error()))
+
 		// Print Source code
 		lines := ReadSource(stLines[0].SourcePathRef)
 		if lines == nil || len(lines) == 0 {
@@ -128,10 +129,17 @@ func (l *logger) DebugSource(lines []string, file string, debugLineNumber int, v
 	if failingLineIndex > -1 {
 		failingArgs = extractArgs(lines[failingLineIndex][columnStart:])
 	}
-	PrintVariables(l, FindUsedArgs(argNames, funcSrc, varValues, lines, funcLine, failingArgs))
+	printVariables(l, findUsedArgs(funcLine, funcSrc, lines, argNames, varValues, failingArgs))
 }
 
-func FindUsedArgs(argNames []string, funcSrc string, varValues []interface{}, src []string, funcLine int, failingArgs []string) []UsedVar {
+func findUsedArgs(
+	funcLine int,
+	funcSrc string,
+	src []string,
+	argNames []string,
+	varValues []interface{},
+	failingArgs []string) []UsedVar {
+
 	var usedVars []UsedVar
 	for i, ar := range argNames {
 		lastWrite := lastWriteToVar(funcSrc, ar)
