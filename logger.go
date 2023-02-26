@@ -110,7 +110,7 @@ func (l *logger) printSource(lines []string, file string, debugLineNumber int, v
 	})
 
 	funcSrc := strings.Join(lines[funcLine:FindEndOfFunction(lines, funcLine)+1], "\n")
-	outputVariables(funcSrc, lines, funcLine, failingLineIndex, columnStart, argNames, varValues)
+	printVariables(funcSrc, lines, funcLine, failingLineIndex, columnStart, argNames, varValues)
 }
 
 func findUsedArgsLastWrite(
