@@ -118,22 +118,12 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int, varValues []i
 		minLine = funcLine + 1
 	}
 
-	// Use AST instead of strings and []string in the future
-	funcSrc := strings.Join(lines[funcLine:FindEndOfFunction(lines, funcLine)+1], "\n")
-
 	//try to find failing line if any
 	failingLineIndex, columnStart, columnEnd, argNames := findFailingLine(lines, funcLine, debugLineNumber)
-	var failingArgs []string
-	if failingLineIndex > -1 {
-		failingArgs = extractArgs(lines[failingLineIndex][columnStart:])
-	}
-
 	if failingLineIndex != -1 {
-		filepathShort := GetShortFilePath(filepath)
-		l.Printf("line %d of %s:%d", failingLineIndex+1, filepathShort, failingLineIndex+1)
+		l.Printf("line %d of %s:%d", failingLineIndex+1, GetShortFilePath(filepath), failingLineIndex+1)
 	} else {
-		filepathShort := GetShortFilePath(filepath)
-		l.Printf("error in %s (failing line not found, stack trace says func call is at line %d)", filepathShort, debugLineNumber)
+		l.Printf("error in %s (failing line not found, stack trace says func call is at line %d)", GetShortFilePath(filepath), debugLineNumber)
 	}
 
 	l.PrintSource(lines, PrintSourceOptions{
@@ -145,6 +135,12 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int, varValues []i
 		EndLine:   maxLine,
 	})
 
+	// Use AST instead of strings and []string in the future
+	funcSrc := strings.Join(lines[funcLine:FindEndOfFunction(lines, funcLine)+1], "\n")
+	var failingArgs []string
+	if failingLineIndex > -1 {
+		failingArgs = extractArgs(lines[failingLineIndex][columnStart:])
+	}
 	PrintVariables(l, FindUsedArgs(argNames, funcSrc, varValues, lines, funcLine, failingArgs))
 }
 
