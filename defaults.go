@@ -18,13 +18,8 @@ var (
 	//DefaultLogger logger implements default configuration for a logger
 	DefaultLogger = &logger{
 		config: &Config{
-			PrintFunc:          DefaultLoggerPrintFunc,
-			LinesBefore:        4,
-			LinesAfter:         2,
-			PrintStack:         true,
-			PrintSource:        true,
-			PrintError:         true,
-			ExitOnDebugSuccess: false,
+			LinesBefore: 4,
+			LinesAfter:  2,
 		},
 	}
 )

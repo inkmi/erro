@@ -3,7 +3,6 @@ package erro
 import (
 	"errors"
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/fatih/color"
 	"path/filepath"
 	"strings"
@@ -18,25 +17,15 @@ type Logger interface {
 	//DebugSource debugs a source file
 	DebugSource(filename string, lineNumber int, args []any)
 	//SetConfig replaces current config with the given one
-	SetConfig(cfg *Config)
-	//Config returns current config
 	Config() *Config
 	//Disable is used to disable Logger (every call to this Logger will perform NO-OP (no operation)) and return instantly
 	//Use Disable(true) to disable and Disable(false) to enable again
-	Disable(bool)
 }
 
 // Config holds the configuration for a logger
 type Config struct {
-	PrintFunc               func(format string, data ...interface{}) //Printer func (eg: fmt.Printf)
-	LinesBefore             int                                      //How many lines to print *before* the error line when printing source code
-	LinesAfter              int                                      //How many lines to print *after* the error line when printing source code
-	PrintStack              bool                                     //Shall we print stack trace ? yes/no
-	PrintSource             bool                                     //Shall we print source code along ? yes/no
-	PrintError              bool                                     //Shall we print the error of Debug(err) ? yes/no
-	ExitOnDebugSuccess      bool                                     //Shall we os.Exit(1) after Debug has finished logging everything ? (doesn't happen when err is nil)
-	DisableStackIndentation bool                                     //Shall we print stack vertically instead of indented
-	Mode                    int
+	LinesBefore int //How many lines to print *before* the error line when printing source code
+	LinesAfter  int //How many lines to print *after* the error line when printing source code
 }
 
 // PrintSourceOptions represents config for (*logger).PrintSource func
@@ -98,7 +87,6 @@ func PrintErro(l *logger, source error, a []any) error {
 		}
 
 		stLines := parseStackTrace(1 + l.stackDepthOverload)
-		spew.Dump(stLines)
 		if stLines == nil || len(stLines) < 1 {
 			l.Printf("Error: %s", source)
 			l.Printf("Erro tried to debug the error but the stack trace seems empty. If you think this is an error, please open an issue at https://github.com/StephanSchmidt/erro/issues/new and provide us logs to investigate.")
@@ -216,13 +204,11 @@ func (l *logger) Doctor() bool {
 func (l *logger) printStack(stLines []StackTraceItem) {
 	for i := len(stLines) - 1; i >= 0; i-- {
 		padding := ""
-		if !l.config.DisableStackIndentation {
-			for j := 0; j < len(stLines)-1-i-1; j++ {
-				padding += "  "
-			}
-			if i < len(stLines)-1 {
-				padding += "╰╴"
-			}
+		for j := 0; j < len(stLines)-1-i-1; j++ {
+			padding += "  "
+		}
+		if i < len(stLines)-1 {
+			padding += "╰╴"
 		}
 		if LogTo != nil {
 			file := filepath.Base(stLines[i].SourcePathRef)
@@ -251,30 +237,3 @@ func (l *logger) SetConfig(cfg *Config) {
 func (l *logger) Config() *Config {
 	return l.config
 }
-
-func (l *logger) SetMode(mode int) bool {
-	if !isIntInSlice(mode, enabledModes) {
-		return false
-	}
-	l.Config().Mode = mode
-	return true
-}
-
-func (l *logger) Disable(shouldDisable bool) {
-	if shouldDisable {
-		l.Config().Mode = ModeDisabled
-	} else {
-		l.Config().Mode = ModeEnabled
-	}
-}
-
-const (
-	// ModeDisabled represents the disabled mode (NO-OP)
-	ModeDisabled = iota + 1
-	// ModeEnabled represents the enabled mode (Print)
-	ModeEnabled
-)
-
-var (
-	enabledModes = []int{ModeDisabled, ModeEnabled}
-)

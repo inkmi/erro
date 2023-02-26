@@ -3,12 +3,9 @@ package erro
 func Doctor(l *logger) bool {
 	neededDoctor := false
 
-	if l.config.PrintFunc == nil {
-		neededDoctor = true
-		if LogTo != nil {
-			(*LogTo).Debug().Msg("PrintFunc not set for this logger. Replacing with DefaultLoggerPrintFunc.")
-		}
-		l.config.PrintFunc = DefaultLoggerPrintFunc
+	neededDoctor = true
+	if LogTo != nil {
+		(*LogTo).Debug().Msg("PrintFunc not set for this logger. Replacing with DefaultLoggerPrintFunc.")
 	}
 
 	if l.config.LinesBefore < 0 {
