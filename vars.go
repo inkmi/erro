@@ -1,6 +1,8 @@
 package erro
 
-import "github.com/fatih/color"
+import (
+	"github.com/fatih/color"
+)
 
 type UsedVar struct {
 	Name            string
@@ -9,17 +11,26 @@ type UsedVar struct {
 	SourceLastWrite string
 }
 
-func printVariables(l *logger, vars []UsedVar) {
+func outputVariables(funcSrc string, lines []string, funcLine int, failingLineIndex int, columnStart int, argNames []string, varValues []interface{}) {
+	// Use AST instead of strings and []string in the future
+	var failingArgs []string
+	if failingLineIndex > -1 {
+		failingArgs = extractArgs(lines[failingLineIndex][columnStart:])
+	}
+	printVariables(findUsedArgsLastWrite(funcLine, funcSrc, lines, argNames, varValues, failingArgs))
+}
+
+func printVariables(vars []UsedVar) {
 	if len(vars) > 0 {
-		l.Printf(color.BlueString("Variables:"))
+		printf(color.BlueString("Variables:"))
 		for _, arg := range vars {
 			if arg.Value != nil {
-				l.Printf(" %v : %v", arg.Name, arg.Value)
+				printf(" %v : %v", arg.Name, arg.Value)
 			} else {
-				l.Printf(" %v : ?", arg.Name)
+				printf(" %v : ?", arg.Name)
 			}
 			if arg.LastWrite > -1 {
-				l.Printf(" ╰╴ %d : %v", arg.LastWrite, arg.SourceLastWrite)
+				printf(" ╰╴ %d : %v", arg.LastWrite, arg.SourceLastWrite)
 			}
 		}
 	}

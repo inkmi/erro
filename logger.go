@@ -11,10 +11,7 @@ import (
 type Logger interface {
 	Errorf(fmt string, err error, a ...interface{}) error
 	New(errorString string, err error, a ...interface{}) error
-	//PrintSource prints lines based on given opts (see PrintSourceOptions type definition)
-	PrintSource(lines []string, opts PrintSourceOptions)
-	//DebugSource debugs a source file
-	DebugSource(lines []string, file string, debugLineNumber int, varValues []interface{})
+	NewE(myErr error, source error, a ...interface{}) error
 }
 
 // Config holds the configuration for a logger
@@ -23,7 +20,7 @@ type Config struct {
 	LinesAfter  int //How many lines to print *after* the error line when printing source code
 }
 
-// PrintSourceOptions represents config for (*logger).PrintSource func
+// PrintSourceOptions represents config for (*logger).printSource func
 type PrintSourceOptions struct {
 	FuncLine    int
 	StartLine   int
@@ -35,15 +32,6 @@ type PrintSourceOptions struct {
 type logger struct {
 	config             *Config //config for the logger
 	stackDepthOverload int     //stack depth to ignore when reading stack
-}
-
-// NewLogger creates a new logger struct with given config
-func NewLogger(cfg *Config) Logger {
-	l := logger{
-		config:             cfg,
-		stackDepthOverload: 0,
-	}
-	return &l
 }
 
 func (l *logger) New(errorString string, source error, a ...interface{}) error {
@@ -78,22 +66,21 @@ func printErro(l *logger, source error, a []any) error {
 		}
 		stLines := parseStackTrace(1 + l.stackDepthOverload)
 		if stLines == nil || len(stLines) < 1 {
-			l.Printf("Error: %s", source)
-			l.Printf("Erro tried to debug the error but the stack trace seems empty. If you think this is an error, please open an issue at https://github.com/StephanSchmidt/erro/issues/new and provide us logs to investigate.")
+			printf("Error: %s", source)
+			printf("Erro tried to debug the error but the stack trace seems empty. If you think this is an error, please open an issue at https://github.com/StephanSchmidt/erro/issues/new and provide us logs to investigate.")
 			return errors.New("erro can't find a stack")
 		}
 		// print Error
-		l.Printf("Error in %s: %s", stLines[0].CallingObject, color.YellowString(source.Error()))
+		printf("Error in %s: %s", stLines[0].CallingObject, color.YellowString(source.Error()))
 
 		// Print Source code
 		lines := ReadSource(stLines[0].SourcePathRef)
 		if lines == nil || len(lines) == 0 {
 			return errors.New("erro can't read source")
 		}
-		l.DebugSource(lines, stLines[0].SourcePathRef, stLines[0].SourceLineRef, a)
+		l.printSource(lines, stLines[0].SourcePathRef, stLines[0].SourceLineRef, a)
 
 		// Print Stack Trace
-		l.Printf(color.BlueString("Stack trace:"))
 		printStack(stLines)
 
 		l.stackDepthOverload = 0
@@ -102,18 +89,18 @@ func printErro(l *logger, source error, a []any) error {
 }
 
 // DebugSource prints certain lines of source code of a file for debugging, using (*logger).config as configurations
-func (l *logger) DebugSource(lines []string, file string, debugLineNumber int, varValues []interface{}) {
+func (l *logger) printSource(lines []string, file string, debugLineNumber int, varValues []interface{}) {
 	//find func line and adjust minLine if below
 	funcLine := findFuncLine(lines, debugLineNumber)
 	failingLineIndex, columnStart, columnEnd, argNames := findFailingLine(lines, funcLine, debugLineNumber)
 
 	if failingLineIndex != -1 {
-		l.Printf("line %d of %s:%d", failingLineIndex+1, GetShortFilePath(file), failingLineIndex+1)
+		printf("line %d of %s:%d", failingLineIndex+1, GetShortFilePath(file), failingLineIndex+1)
 	} else {
-		l.Printf("error in %s (failing line not found, stack trace says func call is at line %d)", GetShortFilePath(file), debugLineNumber)
+		printf("error in %s (failing line not found, stack trace says func call is at line %d)", GetShortFilePath(file), debugLineNumber)
 	}
 
-	l.PrintSource(lines, PrintSourceOptions{
+	printSource(lines, PrintSourceOptions{
 		FuncLine: funcLine,
 		Highlighted: map[int][]int{
 			failingLineIndex: {columnStart, columnEnd},
@@ -122,16 +109,11 @@ func (l *logger) DebugSource(lines []string, file string, debugLineNumber int, v
 		EndLine:   debugLineNumber + l.config.LinesAfter,
 	})
 
-	// Use AST instead of strings and []string in the future
 	funcSrc := strings.Join(lines[funcLine:FindEndOfFunction(lines, funcLine)+1], "\n")
-	var failingArgs []string
-	if failingLineIndex > -1 {
-		failingArgs = extractArgs(lines[failingLineIndex][columnStart:])
-	}
-	printVariables(l, findUsedArgs(funcLine, funcSrc, lines, argNames, varValues, failingArgs))
+	outputVariables(funcSrc, lines, funcLine, failingLineIndex, columnStart, argNames, varValues)
 }
 
-func findUsedArgs(
+func findUsedArgsLastWrite(
 	funcLine int,
 	funcSrc string,
 	src []string,
@@ -168,13 +150,8 @@ func findUsedArgs(
 	return usedVars
 }
 
-// PrintSource prints source code based on opts
-func (l *logger) PrintSource(lines []string, opts PrintSourceOptions) {
-	PrintSource(lines, opts, l)
-}
-
-// Printf is the function used to log
-func (l *logger) Printf(format string, data ...interface{}) {
+// printf is the function used to log
+func printf(format string, data ...interface{}) {
 	if LogTo != nil {
 		(*LogTo).Debug().Msgf(format, data...)
 	}

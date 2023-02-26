@@ -1,6 +1,7 @@
 package erro
 
 import (
+	"github.com/fatih/color"
 	"path/filepath"
 	"runtime/debug"
 	"strconv"
@@ -17,6 +18,7 @@ type StackTraceItem struct {
 }
 
 func printStack(stLines []StackTraceItem) {
+	printf(color.BlueString("Stack trace:"))
 	for i := len(stLines) - 1; i >= 0; i-- {
 		padding := ""
 		for j := 0; j < len(stLines)-1-i-1; j++ {

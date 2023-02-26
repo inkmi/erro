@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	//DefaultLoggerPrintFunc is fmt.Printf without return values
+	//DefaultLoggerPrintFunc is fmt.printf without return values
 	DefaultLoggerPrintFunc = func(format string, data ...interface{}) {
 		fmt.Printf(format+"\n", data...)
 	}
