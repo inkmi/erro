@@ -1,6 +1,7 @@
 package erro
 
 import (
+	"path/filepath"
 	"runtime/debug"
 	"strconv"
 	"strings"
@@ -13,6 +14,22 @@ type StackTraceItem struct {
 	SourcePathRef string
 	SourceLineRef int
 	MysteryNumber int64 // don't know what this is, no documentation found, if you know please let me know via a PR !
+}
+
+func printStack(stLines []StackTraceItem) {
+	for i := len(stLines) - 1; i >= 0; i-- {
+		padding := ""
+		for j := 0; j < len(stLines)-1-i-1; j++ {
+			padding += "  "
+		}
+		if i < len(stLines)-1 {
+			padding += "╰╴"
+		}
+		if LogTo != nil {
+			file := filepath.Base(stLines[i].SourcePathRef)
+			(*LogTo).Debug().Msgf(padding+"%s ( %s:%d )", stLines[i].CallingObject, file, stLines[i].SourceLineRef)
+		}
+	}
 }
 
 func parseStackTrace(deltaDepth int) []StackTraceItem {

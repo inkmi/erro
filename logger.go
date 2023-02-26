@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/fatih/color"
-	"path/filepath"
 	"strings"
 )
 
@@ -95,7 +94,7 @@ func printErro(l *logger, source error, a []any) error {
 
 		// Print Stack Trace
 		l.Printf(color.BlueString("Stack trace:"))
-		l.printStack(stLines)
+		printStack(stLines)
 
 		l.stackDepthOverload = 0
 	}
@@ -172,22 +171,6 @@ func findUsedArgs(
 // PrintSource prints source code based on opts
 func (l *logger) PrintSource(lines []string, opts PrintSourceOptions) {
 	PrintSource(lines, opts, l)
-}
-
-func (l *logger) printStack(stLines []StackTraceItem) {
-	for i := len(stLines) - 1; i >= 0; i-- {
-		padding := ""
-		for j := 0; j < len(stLines)-1-i-1; j++ {
-			padding += "  "
-		}
-		if i < len(stLines)-1 {
-			padding += "╰╴"
-		}
-		if LogTo != nil {
-			file := filepath.Base(stLines[i].SourcePathRef)
-			(*LogTo).Debug().Msgf(padding+"%s ( %s:%d )", stLines[i].CallingObject, file, stLines[i].SourceLineRef)
-		}
-	}
 }
 
 // Printf is the function used to log
