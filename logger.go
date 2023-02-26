@@ -30,8 +30,7 @@ type PrintSourceOptions struct {
 
 // logger holds logger object, implementing Logger interface
 type logger struct {
-	config             *Config //config for the logger
-	stackDepthOverload int     //stack depth to ignore when reading stack
+	config *Config //config for the logger
 }
 
 func (l *logger) New(errorString string, source error, a ...interface{}) error {
@@ -64,7 +63,7 @@ func printErro(l *logger, source error, a []any) error {
 		if source == nil {
 			return errors.New("erro: no error given")
 		}
-		stLines := parseStackTrace(1 + l.stackDepthOverload)
+		stLines := parseStackTrace(2)
 		if stLines == nil || len(stLines) < 1 {
 			printf("Error: %s", source)
 			printf("Erro tried to debug the error but the stack trace seems empty. If you think this is an error, please open an issue at https://github.com/StephanSchmidt/erro/issues/new and provide us logs to investigate.")
@@ -82,8 +81,6 @@ func printErro(l *logger, source error, a []any) error {
 
 		// Print Stack Trace
 		printStack(stLines)
-
-		l.stackDepthOverload = 0
 	}
 	return nil
 }
@@ -155,9 +152,4 @@ func printf(format string, data ...interface{}) {
 	if LogTo != nil {
 		(*LogTo).Debug().Msgf(format, data...)
 	}
-}
-
-// Overload adds depths to remove when parsing next stack trace
-func (l *logger) Overload(amount int) {
-	l.stackDepthOverload += amount
 }

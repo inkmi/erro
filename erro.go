@@ -62,21 +62,17 @@ import (
 )
 
 var (
-	debugMode = false
-	fs        = afero.NewOsFs() //fs is at package level because I think it needn't be scoped to loggers
+	fs = afero.NewOsFs() //fs is at package level because I think it needn't be scoped to loggers
 )
 
 func Errorf(format string, source error, a ...interface{}) error {
-	DefaultLogger.Overload(1) // Prevents from adding this func to the stack trace
 	return DefaultLogger.Errorf(format, source, a...)
 }
 
 func New(errorString string, source error, a ...interface{}) error {
-	DefaultLogger.Overload(1) // Prevents from adding this func to the stack trace
 	return DefaultLogger.New(errorString, source, a...)
 }
 
 func NewE(myError error, source error, a ...interface{}) error {
-	DefaultLogger.Overload(1) // Prevents from adding this func to the stack trace
 	return DefaultLogger.NewE(myError, source, a...)
 }
