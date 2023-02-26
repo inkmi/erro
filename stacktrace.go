@@ -3,7 +3,6 @@ package erro
 import (
 	"github.com/fatih/color"
 	"path/filepath"
-	"runtime/debug"
 	"strconv"
 	"strings"
 )
@@ -32,10 +31,6 @@ func printStack(stLines []StackTraceItem) {
 			(*LogTo).Debug().Msgf(padding+"%s ( %s:%d )", stLines[i].CallingObject, file, stLines[i].SourceLineRef)
 		}
 	}
-}
-
-func parseStackTrace(deltaDepth int) []StackTraceItem {
-	return parseAnyStackTrace(string(debug.Stack()), deltaDepth)
 }
 
 func parseAnyStackTrace(stackStr string, deltaDepth int) []StackTraceItem {

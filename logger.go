@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/fatih/color"
+	"runtime/debug"
 	"strings"
 )
 
@@ -55,31 +56,40 @@ func printErro(l *logger, source error, a []any) error {
 		if source == nil {
 			return errors.New("erro: no error given")
 		}
-		stLines := parseStackTrace(2)
-		if stLines == nil || len(stLines) < 1 {
+
+		stack := string(debug.Stack())
+		stackItems := parseAnyStackTrace(stack, 1)
+		if stackItems == nil || len(stackItems) < 1 {
 			printf("Error: %s", source)
 			printf("Erro tried to debug the error but the stack trace seems empty. If you think this is an error, please open an issue at https://github.com/StephanSchmidt/erro/issues/new and provide us logs to investigate.")
 			return errors.New("erro can't find a stack")
 		}
-		// print Error
-		printf("Error in %s: %s", stLines[0].CallingObject, color.YellowString(source.Error()))
+
+		stackSourceItemIndex := 0
+		fileName := stackItems[stackSourceItemIndex].SourcePathRef
+		callingObject := stackItems[stackSourceItemIndex].CallingObject
+		debugLine := stackItems[stackSourceItemIndex].SourceLineRef
 
 		// Print Source code
-		lines := ReadSource(stLines[0].SourcePathRef)
+		lines := ReadSource(fileName)
 		if lines == nil || len(lines) == 0 {
 			return errors.New("erro can't read source")
 		}
-		data := l.getData(lines, stLines[0].SourcePathRef, stLines[0].SourceLineRef, a)
+
+		data := l.getData(lines, fileName, debugLine, a)
+		data.Stack = stackItems
+
+		printf("Error in %s: %s", callingObject, color.YellowString(source.Error()))
 		l.printSource(lines, data)
 		// Print Stack Trace
-		printStack(stLines)
 	}
 	return nil
 }
 
 func (l *logger) printSource(lines []string, data PrintSourceOptions) {
 	printSource(lines, data)
-	printUsedVariables(data)
+	printUsedVariables(data.UsedVars)
+	printStack(data.Stack)
 }
 
 // DebugSource prints certain lines of source code of a file for debugging, using (*logger).config as configurations
@@ -98,7 +108,8 @@ func (l *logger) getData(lines []string, file string, debugLineNumber int, varVa
 	usedVars := getUsedVars(funcSrc, lines, funcLine, failingLineIndex, columnStart, argNames, varValues)
 
 	data := PrintSourceOptions{
-		FuncLine: funcLine,
+		FailingLine: failingLineIndex,
+		FuncLine:    funcLine,
 		Highlighted: map[int][]int{
 			failingLineIndex: {columnStart, columnEnd},
 		},
@@ -107,43 +118,6 @@ func (l *logger) getData(lines []string, file string, debugLineNumber int, varVa
 		UsedVars:  usedVars,
 	}
 	return data
-}
-
-func findUsedArgsLastWrite(
-	funcLine int,
-	funcSrc string,
-	src []string,
-	argNames []string,
-	varValues []interface{},
-	failingArgs []string) []UsedVar {
-
-	var usedVars []UsedVar
-	for i, ar := range argNames {
-		lastWrite := lastWriteToVar(funcSrc, ar)
-		uv := UsedVar{
-			Name:            ar,
-			Value:           varValues[i],
-			LastWrite:       lastWrite,
-			SourceLastWrite: strings.TrimSpace(src[lastWrite+funcLine-1]),
-		}
-		usedVars = append(usedVars, uv)
-	}
-	for _, fa := range diff(failingArgs, argNames) {
-		lastWrite := lastWriteToVar(funcSrc, fa)
-		lastWriteSrc := ""
-		if lastWrite > -1 {
-			lastWrite = lastWrite + funcLine
-			lastWriteSrc = strings.TrimSpace(src[lastWrite-1])
-		}
-		uv := UsedVar{
-			Name:            fa,
-			Value:           nil,
-			LastWrite:       lastWrite,
-			SourceLastWrite: lastWriteSrc,
-		}
-		usedVars = append(usedVars, uv)
-	}
-	return usedVars
 }
 
 // printf is the function used to log

@@ -2,6 +2,7 @@ package erro
 
 import (
 	"github.com/fatih/color"
+	"strings"
 )
 
 type UsedVar struct {
@@ -20,10 +21,10 @@ func getUsedVars(funcSrc string, lines []string, funcLine int, failingLineIndex 
 	return findUsedArgsLastWrite(funcLine, funcSrc, lines, argNames, varValues, failingArgs)
 }
 
-func printUsedVariables(data PrintSourceOptions) {
-	if len(data.UsedVars) > 0 {
+func printUsedVariables(vars []UsedVar) {
+	if len(vars) > 0 {
 		printf(color.BlueString("Variables:"))
-		for _, arg := range data.UsedVars {
+		for _, arg := range vars {
 			if arg.Value != nil {
 				printf(" %v : %v", arg.Name, arg.Value)
 			} else {
@@ -34,4 +35,41 @@ func printUsedVariables(data PrintSourceOptions) {
 			}
 		}
 	}
+}
+
+func findUsedArgsLastWrite(
+	funcLine int,
+	funcSrc string,
+	src []string,
+	argNames []string,
+	varValues []interface{},
+	failingArgs []string) []UsedVar {
+
+	var usedVars []UsedVar
+	for i, ar := range argNames {
+		lastWrite := lastWriteToVar(funcSrc, ar)
+		uv := UsedVar{
+			Name:            ar,
+			Value:           varValues[i],
+			LastWrite:       lastWrite,
+			SourceLastWrite: strings.TrimSpace(src[lastWrite+funcLine-1]),
+		}
+		usedVars = append(usedVars, uv)
+	}
+	for _, fa := range diff(failingArgs, argNames) {
+		lastWrite := lastWriteToVar(funcSrc, fa)
+		lastWriteSrc := ""
+		if lastWrite > -1 {
+			lastWrite = lastWrite + funcLine
+			lastWriteSrc = strings.TrimSpace(src[lastWrite-1])
+		}
+		uv := UsedVar{
+			Name:            fa,
+			Value:           nil,
+			LastWrite:       lastWrite,
+			SourceLastWrite: lastWriteSrc,
+		}
+		usedVars = append(usedVars, uv)
+	}
+	return usedVars
 }
