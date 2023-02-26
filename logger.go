@@ -156,19 +156,12 @@ func (l *logger) Errorf(format string, source error, a ...any) error {
 }
 
 // DebugSource prints certain lines of source code of a file for debugging, using (*logger).config as configurations
-func (l *logger) DebugSource(filepath string, debugLineNumber int, args []interface{}) {
-	filepathShort := filepath
-	if gopath != "" {
-		filepathShort = strings.Replace(filepath, gopath+"/src/", "", -1)
-	}
+func (l *logger) DebugSource(filepath string, debugLineNumber int, varValues []interface{}) {
 
-	b, err := afero.ReadFile(fs, filepath)
-	if err != nil {
-		l.Printf("erro: cannot read file '%s': %s. If sources are not reachable in this environment, you should set PrintSource=false in logger config.", filepath, err)
+	lines := ReadSource(filepath)
+	if lines == nil || len(lines) == 0 {
 		return
-		// l.Debug(err)
 	}
-	lines := strings.Split(string(b), "\n")
 
 	// set line range to print based on config values and debugLineNumber
 	minLine := debugLineNumber - l.config.LinesBefore
@@ -177,8 +170,8 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int, args []interf
 	//delete blank lines from range and clean range if out of lines range
 	deleteBlankLinesFromRange(lines, &minLine, &maxLine)
 
-	//free some memory from unused values
 	src := lines
+	//free some memory from unused values
 	lines = lines[:maxLine+1]
 
 	//find func line and adjust minLine if below
@@ -195,8 +188,10 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int, args []interf
 	failingArgs := extractArgs(lines[failingLineIndex][columnStart:])
 
 	if failingLineIndex != -1 {
+		filepathShort := GetShortFilePath(filepath)
 		l.Printf("line %d of %s:%d", failingLineIndex+1, filepathShort, failingLineIndex+1)
 	} else {
+		filepathShort := GetShortFilePath(filepath)
 		l.Printf("error in %s (failing line not found, stack trace says func call is at line %d)", filepathShort, debugLineNumber)
 	}
 
@@ -209,27 +204,58 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int, args []interf
 		EndLine:   maxLine,
 	})
 
-	if len(argNames) > 0 {
-		l.Printf(color.BlueString("Variables:"))
-		for i, arg := range argNames {
-			l.Printf(" %v : %v", arg, args[i])
-			lastWrite := lastWriteToVar(funcSrc, arg)
-			if lastWrite > -1 {
-				srcLine := lastWrite + funcLine
-				l.Printf(" ╰╴ %d : %v", srcLine, strings.TrimSpace(src[srcLine-1]))
-			}
+	usedVars := FindUsedArgs(argNames, funcSrc, varValues, src, funcLine, failingArgs)
+	PrintVariables(l, usedVars)
+}
 
+func FindUsedArgs(argNames []string, funcSrc string, varValues []interface{}, src []string, funcLine int, failingArgs []string) []UsedVar {
+	var usedVars []UsedVar
+	for i, ar := range argNames {
+		lastWrite := lastWriteToVar(funcSrc, ar)
+		uv := UsedVar{
+			Name:            ar,
+			Value:           varValues[i],
+			LastWrite:       lastWrite,
+			SourceLastWrite: strings.TrimSpace(src[lastWrite+funcLine-1]),
 		}
-		// Print all args that were in the failing call but not in the Errorf/New call
-		for _, arg := range diff(failingArgs, argNames) {
-			l.Printf(" %v : ?", arg)
-			lastWrite := lastWriteToVar(funcSrc, arg)
-			if lastWrite > -1 {
-				srcLine := lastWrite + funcLine
-				l.Printf(" ╰╴ %d : %v", srcLine, strings.TrimSpace(src[srcLine-1]))
-			}
-		}
+		usedVars = append(usedVars, uv)
 	}
+	for _, fa := range diff(failingArgs, argNames) {
+		lastWrite := lastWriteToVar(funcSrc, fa)
+		lastWriteSrc := ""
+		if lastWrite > -1 {
+			lastWrite = lastWrite + funcLine
+			lastWriteSrc = strings.TrimSpace(src[lastWrite-1])
+		}
+		uv := UsedVar{
+			Name:            fa,
+			Value:           nil,
+			LastWrite:       lastWrite,
+			SourceLastWrite: lastWriteSrc,
+		}
+		usedVars = append(usedVars, uv)
+	}
+	return usedVars
+}
+
+func ReadSource(filepath string) []string {
+	b, err := afero.ReadFile(fs, filepath)
+	if err != nil {
+		if LogTo != nil {
+			(*LogTo).Debug().Msgf("erro: cannot read file '%s': %s. If sources are not reachable in this environment, you should set PrintSource=false in logger config.", filepath, err)
+		}
+		return nil
+	}
+	lines := strings.Split(string(b), "\n")
+	return lines
+}
+
+func GetShortFilePath(filepath string) string {
+	filepathShort := filepath
+	if gopath != "" {
+		filepathShort = strings.Replace(filepath, gopath+"/src/", "", -1)
+	}
+	return filepathShort
 }
 
 // PrintSource prints source code based on opts
