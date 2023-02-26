@@ -48,9 +48,6 @@ func NewLogger(cfg *Config) Logger {
 		config:             cfg,
 		stackDepthOverload: 0,
 	}
-
-	l.Doctor()
-
 	return &l
 }
 
@@ -81,21 +78,17 @@ func (l *logger) Errorf(format string, source error, a ...any) error {
 
 func PrintErro(l *logger, source error, a []any) error {
 	if DevMode {
-		l.Doctor()
 		if source == nil {
 			return errors.New("Erro: no error given")
 		}
-
 		stLines := parseStackTrace(1 + l.stackDepthOverload)
 		if stLines == nil || len(stLines) < 1 {
 			l.Printf("Error: %s", source)
 			l.Printf("Erro tried to debug the error but the stack trace seems empty. If you think this is an error, please open an issue at https://github.com/StephanSchmidt/erro/issues/new and provide us logs to investigate.")
 			return errors.New("Erro can't find a stack")
 		}
-
 		// print Error
 		l.Printf("Error in %s: %s", stLines[0].CallingObject, color.YellowString(source.Error()))
-
 		// Print Source code
 		l.DebugSource(stLines[0].SourcePathRef, stLines[0].SourceLineRef, a)
 
@@ -124,7 +117,7 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int, varValues []i
 
 	src := lines
 	//free some memory from unused values
-	lines = lines[:maxLine+1]
+	//lines = lines[:maxLine+1]
 
 	//find func line and adjust minLine if below
 	funcLine := findFuncLine(lines, debugLineNumber)
@@ -197,10 +190,6 @@ func (l *logger) PrintSource(lines []string, opts PrintSourceOptions) {
 	PrintSource(lines, opts, l)
 }
 
-func (l *logger) Doctor() bool {
-	return Doctor(l)
-}
-
 func (l *logger) printStack(stLines []StackTraceItem) {
 	for i := len(stLines) - 1; i >= 0; i-- {
 		padding := ""
@@ -231,7 +220,6 @@ func (l *logger) Overload(amount int) {
 
 func (l *logger) SetConfig(cfg *Config) {
 	l.config = cfg
-	l.Doctor()
 }
 
 func (l *logger) Config() *Config {
