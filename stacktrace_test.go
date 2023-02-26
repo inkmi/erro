@@ -27,5 +27,5 @@ main.main()
 	//for _, i := range items {
 	//	spew.Dump(i)
 	//}
-	assert.Equal(t, 5, len(items))
+	assert.Equal(t, 4, len(items))
 }

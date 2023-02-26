@@ -3,6 +3,7 @@ package erro
 import (
 	"errors"
 	"fmt"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/fatih/color"
 	"path/filepath"
 	"strings"
@@ -97,6 +98,7 @@ func PrintErro(l *logger, source error, a []any) error {
 		}
 
 		stLines := parseStackTrace(1 + l.stackDepthOverload)
+		spew.Dump(stLines)
 		if stLines == nil || len(stLines) < 1 {
 			l.Printf("Error: %s", source)
 			l.Printf("Erro tried to debug the error but the stack trace seems empty. If you think this is an error, please open an issue at https://github.com/StephanSchmidt/erro/issues/new and provide us logs to investigate.")
@@ -120,7 +122,6 @@ func PrintErro(l *logger, source error, a []any) error {
 
 // DebugSource prints certain lines of source code of a file for debugging, using (*logger).config as configurations
 func (l *logger) DebugSource(filepath string, debugLineNumber int, varValues []interface{}) {
-
 	lines := ReadSource(filepath)
 	if lines == nil || len(lines) == 0 {
 		return

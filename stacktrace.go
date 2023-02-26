@@ -53,5 +53,6 @@ func parseAnyStackTrace(stackStr string, deltaDepth int) []StackTraceItem {
 		}
 	}
 
-	return sti
+	// get rid of the stacktrace item with our framework code
+	return sti[1:]
 }
