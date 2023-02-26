@@ -108,18 +108,10 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int, varValues []i
 		return
 	}
 
-	// set line range to print based on config values and debugLineNumber
-	minLine := debugLineNumber - l.config.LinesBefore
-	maxLine := debugLineNumber + l.config.LinesAfter
-
 	//find func line and adjust minLine if below
 	funcLine := findFuncLine(lines, debugLineNumber)
-	if funcLine > minLine {
-		minLine = funcLine + 1
-	}
-
-	//try to find failing line if any
 	failingLineIndex, columnStart, columnEnd, argNames := findFailingLine(lines, funcLine, debugLineNumber)
+
 	if failingLineIndex != -1 {
 		l.Printf("line %d of %s:%d", failingLineIndex+1, GetShortFilePath(filepath), failingLineIndex+1)
 	} else {
@@ -131,8 +123,8 @@ func (l *logger) DebugSource(filepath string, debugLineNumber int, varValues []i
 		Highlighted: map[int][]int{
 			failingLineIndex: {columnStart, columnEnd},
 		},
-		StartLine: minLine,
-		EndLine:   maxLine,
+		StartLine: max(funcLine, debugLineNumber-l.config.LinesBefore),
+		EndLine:   debugLineNumber + l.config.LinesAfter,
 	})
 
 	// Use AST instead of strings and []string in the future
