@@ -11,19 +11,19 @@ type UsedVar struct {
 	SourceLastWrite string
 }
 
-func printVariables(funcSrc string, lines []string, funcLine int, failingLineIndex int, columnStart int, argNames []string, varValues []interface{}) {
+func getUsedVars(funcSrc string, lines []string, funcLine int, failingLineIndex int, columnStart int, argNames []string, varValues []interface{}) []UsedVar {
 	// Use AST instead of strings and []string in the future
 	var failingArgs []string
 	if failingLineIndex > -1 {
 		failingArgs = extractArgs(lines[failingLineIndex][columnStart:])
 	}
-	printUsedVariables(findUsedArgsLastWrite(funcLine, funcSrc, lines, argNames, varValues, failingArgs))
+	return findUsedArgsLastWrite(funcLine, funcSrc, lines, argNames, varValues, failingArgs)
 }
 
-func printUsedVariables(vars []UsedVar) {
-	if len(vars) > 0 {
+func printUsedVariables(data PrintSourceOptions) {
+	if len(data.UsedVars) > 0 {
 		printf(color.BlueString("Variables:"))
-		for _, arg := range vars {
+		for _, arg := range data.UsedVars {
 			if arg.Value != nil {
 				printf(" %v : %v", arg.Name, arg.Value)
 			} else {

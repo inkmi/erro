@@ -20,14 +20,6 @@ type Config struct {
 	LinesAfter  int //How many lines to print *after* the error line when printing source code
 }
 
-// PrintSourceOptions represents config for (*logger).printSource func
-type PrintSourceOptions struct {
-	FuncLine    int
-	StartLine   int
-	EndLine     int
-	Highlighted map[int][]int //map[lineIndex][columnstart, columnEnd] of chars to highlight
-}
-
 // logger holds logger object, implementing Logger interface
 type logger struct {
 	config *Config //config for the logger
@@ -77,16 +69,21 @@ func printErro(l *logger, source error, a []any) error {
 		if lines == nil || len(lines) == 0 {
 			return errors.New("erro can't read source")
 		}
-		l.printSource(lines, stLines[0].SourcePathRef, stLines[0].SourceLineRef, a)
-
+		data := l.getData(lines, stLines[0].SourcePathRef, stLines[0].SourceLineRef, a)
+		l.printSource(lines, data)
 		// Print Stack Trace
 		printStack(stLines)
 	}
 	return nil
 }
 
+func (l *logger) printSource(lines []string, data PrintSourceOptions) {
+	printSource(lines, data)
+	printUsedVariables(data)
+}
+
 // DebugSource prints certain lines of source code of a file for debugging, using (*logger).config as configurations
-func (l *logger) printSource(lines []string, file string, debugLineNumber int, varValues []interface{}) {
+func (l *logger) getData(lines []string, file string, debugLineNumber int, varValues []interface{}) PrintSourceOptions {
 	//find func line and adjust minLine if below
 	funcLine := findFuncLine(lines, debugLineNumber)
 	failingLineIndex, columnStart, columnEnd, argNames := findFailingLine(lines, funcLine, debugLineNumber)
@@ -97,17 +94,19 @@ func (l *logger) printSource(lines []string, file string, debugLineNumber int, v
 		printf("error in %s (failing line not found, stack trace says func call is at line %d)", GetShortFilePath(file), debugLineNumber)
 	}
 
-	printSource(lines, PrintSourceOptions{
+	funcSrc := strings.Join(lines[funcLine:FindEndOfFunction(lines, funcLine)+1], "\n")
+	usedVars := getUsedVars(funcSrc, lines, funcLine, failingLineIndex, columnStart, argNames, varValues)
+
+	data := PrintSourceOptions{
 		FuncLine: funcLine,
 		Highlighted: map[int][]int{
 			failingLineIndex: {columnStart, columnEnd},
 		},
 		StartLine: max(funcLine, debugLineNumber-l.config.LinesBefore),
 		EndLine:   debugLineNumber + l.config.LinesAfter,
-	})
-
-	funcSrc := strings.Join(lines[funcLine:FindEndOfFunction(lines, funcLine)+1], "\n")
-	printVariables(funcSrc, lines, funcLine, failingLineIndex, columnStart, argNames, varValues)
+		UsedVars:  usedVars,
+	}
+	return data
 }
 
 func findUsedArgsLastWrite(

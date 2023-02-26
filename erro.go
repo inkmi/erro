@@ -22,7 +22,7 @@
 //		LinesBefore        int
 //		LinesAfter         int
 //		PrintStack         bool
-//		printSource        bool
+//		getData        bool
 //		PrintError         bool
 //		ExitOnDebugSuccess bool
 //	}
@@ -33,7 +33,7 @@
 //		LinesBefore:        2,
 //		LinesAfter:         1,
 //		PrintError:         true,
-//		printSource:        true,
+//		getData:        true,
 //		PrintStack:         false,
 //		ExitOnDebugSuccess: true,
 //	})
