@@ -15,11 +15,7 @@ type Logger interface {
 	//PrintSource prints lines based on given opts (see PrintSourceOptions type definition)
 	PrintSource(lines []string, opts PrintSourceOptions)
 	//DebugSource debugs a source file
-	DebugSource(filename string, lineNumber int, args []any)
-	//SetConfig replaces current config with the given one
-	Config() *Config
-	//Disable is used to disable Logger (every call to this Logger will perform NO-OP (no operation)) and return instantly
-	//Use Disable(true) to disable and Disable(false) to enable again
+	DebugSource(lines []string, file string, debugLineNumber int, varValues []interface{})
 }
 
 // Config holds the configuration for a logger
@@ -79,18 +75,22 @@ func (l *logger) Errorf(format string, source error, a ...any) error {
 func PrintErro(l *logger, source error, a []any) error {
 	if DevMode {
 		if source == nil {
-			return errors.New("Erro: no error given")
+			return errors.New("erro: no error given")
 		}
 		stLines := parseStackTrace(1 + l.stackDepthOverload)
 		if stLines == nil || len(stLines) < 1 {
 			l.Printf("Error: %s", source)
 			l.Printf("Erro tried to debug the error but the stack trace seems empty. If you think this is an error, please open an issue at https://github.com/StephanSchmidt/erro/issues/new and provide us logs to investigate.")
-			return errors.New("Erro can't find a stack")
+			return errors.New("erro can't find a stack")
 		}
 		// print Error
 		l.Printf("Error in %s: %s", stLines[0].CallingObject, color.YellowString(source.Error()))
 		// Print Source code
-		l.DebugSource(stLines[0].SourcePathRef, stLines[0].SourceLineRef, a)
+		lines := ReadSource(stLines[0].SourcePathRef)
+		if lines == nil || len(lines) == 0 {
+			return errors.New("erro can't read source")
+		}
+		l.DebugSource(lines, stLines[0].SourcePathRef, stLines[0].SourceLineRef, a)
 
 		// Print Stack Trace
 		l.Printf(color.BlueString("Stack trace:"))
@@ -102,20 +102,15 @@ func PrintErro(l *logger, source error, a []any) error {
 }
 
 // DebugSource prints certain lines of source code of a file for debugging, using (*logger).config as configurations
-func (l *logger) DebugSource(filepath string, debugLineNumber int, varValues []interface{}) {
-	lines := ReadSource(filepath)
-	if lines == nil || len(lines) == 0 {
-		return
-	}
-
+func (l *logger) DebugSource(lines []string, file string, debugLineNumber int, varValues []interface{}) {
 	//find func line and adjust minLine if below
 	funcLine := findFuncLine(lines, debugLineNumber)
 	failingLineIndex, columnStart, columnEnd, argNames := findFailingLine(lines, funcLine, debugLineNumber)
 
 	if failingLineIndex != -1 {
-		l.Printf("line %d of %s:%d", failingLineIndex+1, GetShortFilePath(filepath), failingLineIndex+1)
+		l.Printf("line %d of %s:%d", failingLineIndex+1, GetShortFilePath(file), failingLineIndex+1)
 	} else {
-		l.Printf("error in %s (failing line not found, stack trace says func call is at line %d)", GetShortFilePath(filepath), debugLineNumber)
+		l.Printf("error in %s (failing line not found, stack trace says func call is at line %d)", GetShortFilePath(file), debugLineNumber)
 	}
 
 	l.PrintSource(lines, PrintSourceOptions{
@@ -197,12 +192,4 @@ func (l *logger) Printf(format string, data ...interface{}) {
 // Overload adds depths to remove when parsing next stack trace
 func (l *logger) Overload(amount int) {
 	l.stackDepthOverload += amount
-}
-
-func (l *logger) SetConfig(cfg *Config) {
-	l.config = cfg
-}
-
-func (l *logger) Config() *Config {
-	return l.config
 }

@@ -71,11 +71,11 @@ github.com/StephanSchmidt/erro/logger.go:80.13,81.20 1 0
 github.com/StephanSchmidt/erro/logger.go:81.20,83.4 1 0
 github.com/StephanSchmidt/erro/logger.go:84.3,85.41 2 0
 github.com/StephanSchmidt/erro/logger.go:85.41,89.4 3 0
-github.com/StephanSchmidt/erro/logger.go:91.3,99.27 5 0
-github.com/StephanSchmidt/erro/logger.go:101.2,101.12 1 0
-github.com/StephanSchmidt/erro/logger.go:105.93,107.37 2 0
-github.com/StephanSchmidt/erro/logger.go:107.37,109.3 1 0
-github.com/StephanSchmidt/erro/logger.go:112.2,115.28 3 0
+github.com/StephanSchmidt/erro/logger.go:91.3,94.38 3 0
+github.com/StephanSchmidt/erro/logger.go:94.38,96.4 1 0
+github.com/StephanSchmidt/erro/logger.go:97.3,103.27 4 0
+github.com/StephanSchmidt/erro/logger.go:105.2,105.12 1 0
+github.com/StephanSchmidt/erro/logger.go:109.105,115.28 3 0
 github.com/StephanSchmidt/erro/logger.go:115.28,117.3 1 0
 github.com/StephanSchmidt/erro/logger.go:117.8,119.3 1 0
 github.com/StephanSchmidt/erro/logger.go:121.2,133.27 4 0
