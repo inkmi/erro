@@ -47,7 +47,8 @@ func findFailingLine(lines []string, funcLine int, debugLine int) (int, int, int
 			continue
 		}
 		// At that point we found our definition
-		columnStart, columnEnd = findStartEnd(failingLine, index[0], index[1])
+		columnStart = index[0]
+		columnEnd = findStartEnd2(failingLine, columnStart)
 		return failingLineIndex, columnStart, columnEnd
 	}
 	return failingLineIndex, columnStart, columnEnd
@@ -64,7 +65,7 @@ func findStartEnd2(failingLine string, start int) int {
 		} else if failingLine[j] == ')' {
 			closedBrackets++
 		}
-		if openedBrackets == closedBrackets { // that means every opened brackets are now closed (the first/last one is the one from the func call)
+		if openedBrackets > 0 && openedBrackets == closedBrackets { // that means every opened brackets are now closed (the first/last one is the one from the func call)
 			columnEnd = j    // so we found our column end
 			return columnEnd // so return the result
 		}
@@ -77,9 +78,4 @@ func findStartEnd2(failingLine string, start int) int {
 		columnEnd = len(failingLine) - 1
 	}
 	return columnEnd
-}
-
-func findStartEnd(failingLine string, i0 int, i1 int) (int, int) {
-	end := findStartEnd2(failingLine, i0)
-	return i0, end
 }

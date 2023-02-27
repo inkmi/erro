@@ -6,13 +6,8 @@ import (
 	"testing"
 )
 
-func TestFindStartEnd(t *testing.T) {
+func TestFindStartEnding(t *testing.T) {
 	failingLine := "err := calc(x,y)"
-	i0 := strings.Index(failingLine, "(")
-	i1 := i0
-	start, end := findStartEnd(failingLine, i0, i1)
-
-	assert.Equal(t, 11, start)
+	end := findStartEnd2(failingLine, strings.Index(failingLine, "("))
 	assert.Equal(t, 15, end)
-
 }
