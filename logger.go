@@ -64,7 +64,6 @@ func printErro(l *logger, source error, a []any) error {
 			printf("Erro tried to debug the error but the stack trace seems empty. If you think this is an error, please open an issue at https://github.com/StephanSchmidt/erro/issues/new and provide us logs to investigate.")
 			return errors.New("erro can't find a stack")
 		}
-
 		stackSourceItemIndex := 0
 		fileName := stackItems[stackSourceItemIndex].SourcePathRef
 		callingObject := stackItems[stackSourceItemIndex].CallingObject
