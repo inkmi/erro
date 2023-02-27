@@ -2,7 +2,6 @@ package erro
 
 import (
 	"errors"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/fatih/color"
 	"runtime/debug"
 	"strings"
@@ -15,7 +14,6 @@ type config struct {
 }
 
 func printErro(source error, a ...any) error {
-	spew.Dump(a)
 	if DevMode {
 		if source == nil {
 			return errors.New("erro: no error given")
