@@ -79,21 +79,17 @@ func printErro(l *logger, source error, a []any) error {
 		data.Stack = stackItems
 
 		printf("Error in %s: %s", callingObject, color.YellowString(source.Error()))
-		l.printSource(lines, data)
-		// Print Stack Trace
+
+		if data.FailingLine != -1 {
+			printf("line %d of %s:%d", data.FailingLine+1, data.ShortFileName, data.FailingLine+1)
+		} else {
+			printf("error in %s (failing line not found, stack trace says func call is at line %d)", data.ShortFileName, data.DebugLine)
+		}
+		printSource(lines, data)
+		printUsedVariables(data.UsedVars)
+		printStack(data.Stack)
 	}
 	return nil
-}
-
-func (l *logger) printSource(lines []string, data PrintSourceOptions) {
-	if data.FailingLine != -1 {
-		printf("line %d of %s:%d", data.FailingLine+1, data.ShortFileName, data.FailingLine+1)
-	} else {
-		printf("error in %s (failing line not found, stack trace says func call is at line %d)", data.ShortFileName, data.DebugLine)
-	}
-	printSource(lines, data)
-	printUsedVariables(data.UsedVars)
-	printStack(data.Stack)
 }
 
 // DebugSource prints certain lines of source code of a file for debugging, using (*logger).config as configurations
