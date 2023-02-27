@@ -14,11 +14,6 @@ type Config struct {
 	LinesAfter  int //How many lines to print *after* the error line when printing source code
 }
 
-// logger holds logger object, implementing Logger interface
-type logger struct {
-	config *Config //config for the logger
-}
-
 func LNew(errorString string, source error, a ...interface{}) error {
 	err := printErro(source, a)
 	if err != nil {
