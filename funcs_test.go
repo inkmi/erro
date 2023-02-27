@@ -56,7 +56,7 @@ func TestVarNameNewE(t *testing.T) {
 func TestFuncArgNames(t *testing.T) {
 	t.Parallel()
 	line := `erro.Errorf("abc", err, a, b, c){   `
-	argNames := ArgNames(line)
+	argNames := findArgNames(line)
 	assert.Equal(t, 5, len(argNames))
 	assert.Equal(t, "err", argNames[1])
 	assert.Equal(t, "a", argNames[2])

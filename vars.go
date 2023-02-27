@@ -12,16 +12,6 @@ type UsedVar struct {
 	SourceLastWrite string
 }
 
-func getUsedVars(funcSrc string, lines []string, funcLine int, failingLineIndex int, columnStart int,
-	argNames []string, varValues []interface{}) []UsedVar {
-	// Use AST instead of strings and []string in the future
-	var failingArgs []string
-	if failingLineIndex > -1 {
-		failingArgs = extractArgs(lines[failingLineIndex][columnStart:])
-	}
-	return findUsedArgsLastWrite(funcLine, funcSrc, lines, argNames, varValues, failingArgs)
-}
-
 func findUsedArgsLastWrite(
 	funcLine int,
 	funcSrc string,

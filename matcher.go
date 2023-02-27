@@ -16,7 +16,7 @@ func MatchFunc(line string) bool {
 	return regexpFuncLine.Match([]byte(line))
 }
 
-func ArgNames(line string) []string {
+func findArgNames(line string) []string {
 	reMatches := regexpParseDebugLineParseVarName.FindIndex([]byte(line))
 	matches := len(reMatches)
 	if matches > 0 {
