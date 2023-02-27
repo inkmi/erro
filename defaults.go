@@ -1,16 +1,10 @@
 package erro
 
 import (
-	"fmt"
 	"github.com/rs/zerolog"
 )
 
 var (
-	//DefaultLoggerPrintFunc is fmt.printf without return values
-	DefaultLoggerPrintFunc = func(format string, data ...interface{}) {
-		fmt.Printf(format+"\n", data...)
-	}
-
 	LogTo *zerolog.Logger = nil
 
 	DevMode = false
