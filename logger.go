@@ -2,41 +2,15 @@ package erro
 
 import (
 	"errors"
-	"fmt"
 	"github.com/fatih/color"
 	"runtime/debug"
 	"strings"
 )
 
-// Config holds the configuration for a logger
-type Config struct {
+// config holds the configuration for a logger
+type config struct {
 	LinesBefore int //How many lines to print *before* the error line when printing source code
 	LinesAfter  int //How many lines to print *after* the error line when printing source code
-}
-
-func LNew(errorString string, source error, a ...interface{}) error {
-	err := printErro(source, a)
-	if err != nil {
-		return err
-	}
-	n := errors.New(errorString)
-	return errors.Join(n, source)
-}
-
-func LNewE(myErr error, source error, a ...interface{}) error {
-	err := printErro(source, a)
-	if err != nil {
-		return err
-	}
-	return errors.Join(myErr, source)
-}
-
-func LErrorf(format string, source error, a ...any) error {
-	err := printErro(source, a)
-	if err != nil {
-		return err
-	}
-	return fmt.Errorf(format, source, a)
 }
 
 func printErro(source error, a []any) error {
@@ -115,11 +89,4 @@ func getData(lines []string, file string, debugLineNumber int,
 		UsedVars:  usedVars,
 	}
 	return data
-}
-
-// printf is the function used to log
-func printf(format string, data ...interface{}) {
-	if LogTo != nil {
-		(*LogTo).Debug().Msgf(format, data...)
-	}
 }

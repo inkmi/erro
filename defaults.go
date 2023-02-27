@@ -9,7 +9,7 @@ var (
 
 	DevMode = false
 
-	DefaultConfig = Config{
+	DefaultConfig = config{
 		LinesBefore: 4,
 		LinesAfter:  2,
 	}

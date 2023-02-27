@@ -13,3 +13,10 @@ func min(a, b int) int {
 	}
 	return b
 }
+
+// printf is the function used to log
+func printf(format string, data ...interface{}) {
+	if LogTo != nil {
+		(*LogTo).Debug().Msgf(format, data...)
+	}
+}

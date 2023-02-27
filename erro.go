@@ -18,7 +18,7 @@
 //
 // You can configure your own logger with these options :
 //
-//	type Config struct {
+//	type config struct {
 //		LinesBefore        int
 //		LinesAfter         int
 //		PrintStack         bool
@@ -29,7 +29,7 @@
 //
 // Example :
 //
-//	debug := erro.NewLogger(&erro.Config{
+//	debug := erro.NewLogger(&erro.config{
 //		LinesBefore:        2,
 //		LinesAfter:         1,
 //		PrintError:         true,
@@ -58,12 +58,39 @@
 package erro
 
 import (
+	"errors"
+	"fmt"
 	"github.com/spf13/afero"
 )
 
 var (
 	fs = afero.NewOsFs() //fs is at package level because I think it needn't be scoped to loggers
 )
+
+func LNew(errorString string, source error, a ...interface{}) error {
+	err := printErro(source, a)
+	if err != nil {
+		return err
+	}
+	n := errors.New(errorString)
+	return errors.Join(n, source)
+}
+
+func LNewE(myErr error, source error, a ...interface{}) error {
+	err := printErro(source, a)
+	if err != nil {
+		return err
+	}
+	return errors.Join(myErr, source)
+}
+
+func LErrorf(format string, source error, a ...any) error {
+	err := printErro(source, a)
+	if err != nil {
+		return err
+	}
+	return fmt.Errorf(format, source, a)
+}
 
 func Errorf(format string, source error, a ...interface{}) error {
 	return LErrorf(format, source, a...)
