@@ -75,7 +75,7 @@ func printErro(l *logger, source error, a []any) error {
 			return errors.New("erro can't read source")
 		}
 
-		data := l.getData(lines, fileName, debugLine, a)
+		data := getData(lines, fileName, debugLine, a, l.config.LinesBefore, l.config.LinesAfter)
 		data.Stack = stackItems
 
 		printf("Error in %s: %s", callingObject, color.YellowString(source.Error()))
@@ -93,7 +93,11 @@ func printErro(l *logger, source error, a []any) error {
 }
 
 // DebugSource prints certain lines of source code of a file for debugging, using (*logger).config as configurations
-func (l *logger) getData(lines []string, file string, debugLineNumber int, varValues []interface{}) PrintSourceOptions {
+func getData(lines []string, file string, debugLineNumber int,
+	varValues []interface{},
+	linesBefore int,
+	linesAfter int,
+) PrintSourceOptions {
 	//find func line and adjust minLine if below
 	funcLine := findFuncLine(lines, debugLineNumber)
 	failingLineIndex, columnStart, columnEnd := findFailingLine(lines, funcLine, debugLineNumber)
@@ -118,8 +122,8 @@ func (l *logger) getData(lines []string, file string, debugLineNumber int, varVa
 		Highlighted: map[int][]int{
 			failingLineIndex: {columnStart, columnEnd},
 		},
-		StartLine: max(funcLine, debugLineNumber-l.config.LinesBefore),
-		EndLine:   debugLineNumber + l.config.LinesAfter,
+		StartLine: max(funcLine, debugLineNumber-linesBefore),
+		EndLine:   debugLineNumber + linesAfter,
 		UsedVars:  usedVars,
 	}
 	return data

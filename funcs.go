@@ -4,7 +4,7 @@ import "strings"
 
 // findFuncLine finds line where func is declared
 func findFuncLine(lines []string, lineNumber int) int {
-	for i := lineNumber; i > 0; i-- {
+	for i := lineNumber; i >= 0; i-- {
 		if MatchFunc(lines[i]) {
 			return i
 		}
