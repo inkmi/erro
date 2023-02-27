@@ -66,13 +66,13 @@ var (
 )
 
 func Errorf(format string, source error, a ...interface{}) error {
-	return DefaultLogger.Errorf(format, source, a...)
+	return LErrorf(format, source, a...)
 }
 
 func New(errorString string, source error, a ...interface{}) error {
-	return DefaultLogger.New(errorString, source, a...)
+	return LNew(errorString, source, a...)
 }
 
 func NewE(myError error, source error, a ...interface{}) error {
-	return DefaultLogger.NewE(myError, source, a...)
+	return LNewE(myError, source, a...)
 }

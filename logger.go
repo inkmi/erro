@@ -19,7 +19,7 @@ type logger struct {
 	config *Config //config for the logger
 }
 
-func (l *logger) New(errorString string, source error, a ...interface{}) error {
+func LNew(errorString string, source error, a ...interface{}) error {
 	err := printErro(source, a)
 	if err != nil {
 		return err
@@ -28,7 +28,7 @@ func (l *logger) New(errorString string, source error, a ...interface{}) error {
 	return errors.Join(n, source)
 }
 
-func (l *logger) NewE(myErr error, source error, a ...interface{}) error {
+func LNewE(myErr error, source error, a ...interface{}) error {
 	err := printErro(source, a)
 	if err != nil {
 		return err
@@ -36,7 +36,7 @@ func (l *logger) NewE(myErr error, source error, a ...interface{}) error {
 	return errors.Join(myErr, source)
 }
 
-func (l *logger) Errorf(format string, source error, a ...any) error {
+func LErrorf(format string, source error, a ...any) error {
 	err := printErro(source, a)
 	if err != nil {
 		return err
