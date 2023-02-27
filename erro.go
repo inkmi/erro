@@ -60,15 +60,11 @@ package erro
 import (
 	"errors"
 	"fmt"
-	"github.com/spf13/afero"
-)
-
-var (
-	fs = afero.NewOsFs() //fs is at package level because I think it needn't be scoped to loggers
+	"github.com/StephanSchmidt/erro/internal"
 )
 
 func Errorf(format string, source error, a ...any) error {
-	err := printErro(source, a)
+	err := internal.PrintErro(source, a)
 	if err != nil {
 		return err
 	}
@@ -76,7 +72,7 @@ func Errorf(format string, source error, a ...any) error {
 }
 
 func New(errorString string, source error, a ...interface{}) error {
-	err := printErro(source, a)
+	err := internal.PrintErro(source, a)
 	if err != nil {
 		return err
 	}
@@ -85,7 +81,7 @@ func New(errorString string, source error, a ...interface{}) error {
 }
 
 func NewE(myError error, source error, a ...interface{}) error {
-	err := printErro(source, a)
+	err := internal.PrintErro(source, a)
 	if err != nil {
 		return err
 	}

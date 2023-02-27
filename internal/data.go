@@ -1,4 +1,4 @@
-package erro
+package internal
 
 // PrintSourceOptions represents config for (*logger).getData func
 type PrintSourceOptions struct {

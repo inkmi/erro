@@ -1,4 +1,4 @@
-package erro
+package internal
 
 func max(a, b int) int {
 	if a > b {

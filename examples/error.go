@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/StephanSchmidt/erro"
+	"github.com/StephanSchmidt/erro/internal"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"os"
@@ -13,8 +14,8 @@ func main() {
 	logger := log.With().Caller().Logger().Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	zerolog.SetGlobalLevel(zerolog.DebugLevel)
 
-	erro.LogTo = &logger
-	erro.DevMode = true
+	internal.LogTo = &logger
+	internal.DevMode = true
 
 	wrapingFunc()
 

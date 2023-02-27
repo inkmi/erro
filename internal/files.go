@@ -1,9 +1,13 @@
-package erro
+package internal
 
 import (
 	"github.com/spf13/afero"
 	"os"
 	"strings"
+)
+
+var (
+	fs = afero.NewOsFs() //fs is at package level because I think it needn't be scoped to loggers
 )
 
 var (

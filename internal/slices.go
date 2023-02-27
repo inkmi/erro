@@ -1,4 +1,4 @@
-package erro
+package internal
 
 func isIntInSlice(i int, s []int) bool {
 	for vi := range s {

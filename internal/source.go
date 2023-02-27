@@ -1,4 +1,4 @@
-package erro
+package internal
 
 import "github.com/fatih/color"
 

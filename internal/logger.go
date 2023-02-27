@@ -1,4 +1,4 @@
-package erro
+package internal
 
 import (
 	"errors"
@@ -13,7 +13,7 @@ type config struct {
 	LinesAfter  int //How many lines to print *after* the error line when printing source code
 }
 
-func printErro(source error, a ...any) error {
+func PrintErro(source error, a ...any) error {
 	if DevMode {
 		if source == nil {
 			return errors.New("erro: no error given")
