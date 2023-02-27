@@ -29,3 +29,27 @@ main.main()
 	//}
 	assert.Equal(t, 4, len(items))
 }
+
+func TestPrintStacktrace(t *testing.T) {
+	tp := NewTestPrinter()
+	sti1 := StackTraceItem{
+		CallingObject: "main.main",
+		Args:          []string{},
+		SourcePathRef: "error.go",
+		SourceLineRef: 20,
+		MysteryNumber: 0,
+	}
+	sti2 := StackTraceItem{
+		CallingObject: "main.wrapingFunc",
+		Args:          []string{},
+		SourcePathRef: "error.go",
+		SourceLineRef: 25,
+		MysteryNumber: 0,
+	}
+	Printer = TestPrinterFunc(tp)
+	printStack([]StackTraceItem{sti2, sti1})
+	assert.Equal(t, 3, len(tp.Output))
+	assert.Equal(t, "main.main ( error.go:20 )", tp.Output[1])
+	assert.Equal(t, "╰╴main.wrapingFunc ( error.go:25 )", tp.Output[2])
+
+}

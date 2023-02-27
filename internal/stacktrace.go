@@ -26,10 +26,8 @@ func printStack(stLines []StackTraceItem) {
 		if i < len(stLines)-1 {
 			padding += "╰╴"
 		}
-		if LogTo != nil {
-			file := filepath.Base(stLines[i].SourcePathRef)
-			(*LogTo).Debug().Msgf(padding+"%s ( %s:%d )", stLines[i].CallingObject, file, stLines[i].SourceLineRef)
-		}
+		file := filepath.Base(stLines[i].SourcePathRef)
+		printf(padding+"%s ( %s:%d )", stLines[i].CallingObject, file, stLines[i].SourceLineRef)
 	}
 }
 
