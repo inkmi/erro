@@ -2,6 +2,7 @@ package erro
 
 import (
 	"errors"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/fatih/color"
 	"runtime/debug"
 	"strings"
@@ -13,14 +14,15 @@ type config struct {
 	LinesAfter  int //How many lines to print *after* the error line when printing source code
 }
 
-func printErro(source error, a []any) error {
+func printErro(source error, a ...any) error {
+	spew.Dump(a)
 	if DevMode {
 		if source == nil {
 			return errors.New("erro: no error given")
 		}
 
 		stack := string(debug.Stack())
-		stackItems := parseAnyStackTrace(stack, 1)
+		stackItems := parseAnyStackTrace(stack, 0)
 		if stackItems == nil || len(stackItems) < 1 {
 			printf("Error: %s", source)
 			printf("Erro tried to debug the error but the stack trace seems empty. If you think this is an error, please open an issue at https://github.com/StephanSchmidt/erro/issues/new and provide us logs to investigate.")

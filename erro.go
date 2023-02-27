@@ -67,7 +67,15 @@ var (
 	fs = afero.NewOsFs() //fs is at package level because I think it needn't be scoped to loggers
 )
 
-func LNew(errorString string, source error, a ...interface{}) error {
+func Errorf(format string, source error, a ...any) error {
+	err := printErro(source, a)
+	if err != nil {
+		return err
+	}
+	return fmt.Errorf(format, source, a)
+}
+
+func New(errorString string, source error, a ...interface{}) error {
 	err := printErro(source, a)
 	if err != nil {
 		return err
@@ -76,30 +84,10 @@ func LNew(errorString string, source error, a ...interface{}) error {
 	return errors.Join(n, source)
 }
 
-func LNewE(myErr error, source error, a ...interface{}) error {
-	err := printErro(source, a)
-	if err != nil {
-		return err
-	}
-	return errors.Join(myErr, source)
-}
-
-func LErrorf(format string, source error, a ...any) error {
-	err := printErro(source, a)
-	if err != nil {
-		return err
-	}
-	return fmt.Errorf(format, source, a)
-}
-
-func Errorf(format string, source error, a ...interface{}) error {
-	return LErrorf(format, source, a...)
-}
-
-func New(errorString string, source error, a ...interface{}) error {
-	return LNew(errorString, source, a...)
-}
-
 func NewE(myError error, source error, a ...interface{}) error {
-	return LNewE(myError, source, a...)
+	err := printErro(source, a)
+	if err != nil {
+		return err
+	}
+	return errors.Join(myError, source)
 }
