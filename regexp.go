@@ -48,14 +48,13 @@ func findFailingLine(lines []string, funcLine int, debugLine int) (int, int, int
 		}
 		// At that point we found our definition
 		columnStart = index[0]
-		columnEnd = findStartEnd2(failingLine, columnStart)
+		columnEnd = findStartEnd(failingLine, columnStart)
 		return failingLineIndex, columnStart, columnEnd
 	}
 	return failingLineIndex, columnStart, columnEnd
 }
 
-func findStartEnd2(failingLine string, start int) int {
-	columnEnd := len(failingLine) - 1
+func findStartEnd(failingLine string, start int) int {
 	//now lets walk to columnEnd (because regexp is really bad at doing this)
 	//for this purpose, we count brackets from first opening, and stop when openedBrackets == closedBrackets
 	openedBrackets, closedBrackets := 0, 0
@@ -66,16 +65,8 @@ func findStartEnd2(failingLine string, start int) int {
 			closedBrackets++
 		}
 		if openedBrackets > 0 && openedBrackets == closedBrackets { // that means every opened brackets are now closed (the first/last one is the one from the func call)
-			columnEnd = j    // so we found our column end
-			return columnEnd // so return the result
+			return j // so return the result
 		}
 	}
-
-	if columnEnd == 0 { //columnEnd was not found
-		if LogTo != nil {
-			(*LogTo).Debug().Msgf("Fixing value of columnEnd (0). Defaulting to end of failing line.")
-		}
-		columnEnd = len(failingLine) - 1
-	}
-	return columnEnd
+	return len(failingLine) - 1
 }

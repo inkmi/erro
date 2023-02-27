@@ -8,6 +8,6 @@ import (
 
 func TestFindStartEnding(t *testing.T) {
 	failingLine := "err := calc(x,y)"
-	end := findStartEnd2(failingLine, strings.Index(failingLine, "("))
+	end := findStartEnd(failingLine, strings.Index(failingLine, "("))
 	assert.Equal(t, 15, end)
 }
