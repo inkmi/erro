@@ -21,8 +21,8 @@ var (
 )
 
 // findFailingLine finds line where <var> is defined, if Debug(<var>) is present on lines[debugLine]. funcLine serves as max
-func findFailingLine(lines []string, funcLine int, debugLine int) (failingLineIndex, columnStart, columnEnd int) {
-	failingLineIndex = -1 //init error flag
+func findFailingLine(lines []string, funcLine int, debugLine int) (int, int, int) {
+	failingLineIndex, columnStart, columnEnd := -1, -1, -1
 	//find var name
 	varName := MatchVarName(lines[debugLine-1])
 
@@ -38,40 +38,44 @@ func findFailingLine(lines []string, funcLine int, debugLine int) (failingLineIn
 		} else if len(lines[i]) >= 2 && lines[i][:2] == "//" { // skip if line is a comment line (note: comments of type '/*' can be stopped inline and code may be placed after it, therefore we should pass line if '/*' starts the line)
 			continue
 		}
+		failingLineIndex = i
+		failingLine := lines[i]
 
 		//search for var definition
-		index := reFindVar.FindStringSubmatchIndex(lines[i])
+		index := reFindVar.FindStringSubmatchIndex(failingLine)
 		if index == nil {
 			continue
 		}
 		// At that point we found our definition
+		columnStart, columnEnd = findStartEnd(failingLine, index[0], index[1])
+		return failingLineIndex, columnStart, columnEnd
+	}
+	return failingLineIndex, columnStart, columnEnd
+}
 
-		failingLineIndex = i   //store the ressult
-		columnStart = index[0] //store columnStart
-
-		//now lets walk to columnEnd (because regexp is really bad at doing this)
-		//for this purpose, we count brackets from first opening, and stop when openedBrackets == closedBrackets
-		openedBrackets, closedBrackets := 0, 0
-		for j := index[1]; j < len(lines[i]); j++ {
-			if lines[i][j] == '(' {
-				openedBrackets++
-			} else if lines[i][j] == ')' {
-				closedBrackets++
-			}
-			if openedBrackets == closedBrackets { // that means every opened brackets are now closed (the first/last one is the one from the func call)
-				columnEnd = j // so we found our column end
-				return        // so return the result
-			}
+func findStartEnd(failingLine string, i0 int, i1 int) (int, int) {
+	columnStart := i0 //store columnStart
+	columnEnd := len(failingLine) - 1
+	//now lets walk to columnEnd (because regexp is really bad at doing this)
+	//for this purpose, we count brackets from first opening, and stop when openedBrackets == closedBrackets
+	openedBrackets, closedBrackets := 0, 0
+	for j := i1; j < len(failingLine); j++ {
+		if failingLine[j] == '(' {
+			openedBrackets++
+		} else if failingLine[j] == ')' {
+			closedBrackets++
 		}
-
-		if columnEnd == 0 { //columnEnd was not found
-			if LogTo != nil {
-				(*LogTo).Debug().Msgf("Fixing value of columnEnd (0). Defaulting to end of failing line.")
-			}
-			columnEnd = len(lines[i]) - 1
+		if openedBrackets == closedBrackets { // that means every opened brackets are now closed (the first/last one is the one from the func call)
+			columnEnd = j                 // so we found our column end
+			return columnStart, columnEnd // so return the result
 		}
-		return
 	}
 
-	return
+	if columnEnd == 0 { //columnEnd was not found
+		if LogTo != nil {
+			(*LogTo).Debug().Msgf("Fixing value of columnEnd (0). Defaulting to end of failing line.")
+		}
+		columnEnd = len(failingLine) - 1
+	}
+	return columnStart, columnEnd
 }

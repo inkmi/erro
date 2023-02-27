@@ -22,10 +22,14 @@ func ReadSource(filepath string) []string {
 	return lines
 }
 
-func GetShortFilePath(filepath string) string {
+func getShorterFilePath(filepath string, remove string) string {
 	filepathShort := filepath
-	if gopath != "" {
-		filepathShort = strings.Replace(filepath, gopath+"/src/", "", -1)
+	if remove != "" {
+		filepathShort = strings.Replace(filepath, remove, "", -1)
 	}
 	return filepathShort
+}
+
+func getShortFilePath(filepath string) string {
+	return getShorterFilePath(filepath, gopath+"/src/")
 }

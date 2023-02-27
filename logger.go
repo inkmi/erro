@@ -112,7 +112,7 @@ func (l *logger) getData(lines []string, file string, debugLineNumber int, varVa
 
 	data := PrintSourceOptions{
 		DebugLine:     debugLineNumber,
-		ShortFileName: GetShortFilePath(file),
+		ShortFileName: getShortFilePath(file),
 		FailingLine:   failingLineIndex,
 		FuncLine:      funcLine,
 		Highlighted: map[int][]int{
