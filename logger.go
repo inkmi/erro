@@ -86,6 +86,11 @@ func printErro(l *logger, source error, a []any) error {
 }
 
 func (l *logger) printSource(lines []string, data PrintSourceOptions) {
+	if data.FailingLine != -1 {
+		printf("line %d of %s:%d", data.FailingLine+1, data.ShortFileName, data.FailingLine+1)
+	} else {
+		printf("error in %s (failing line not found, stack trace says func call is at line %d)", data.ShortFileName, data.DebugLine)
+	}
 	printSource(lines, data)
 	printUsedVariables(data.UsedVars)
 	printStack(data.Stack)
@@ -96,12 +101,6 @@ func (l *logger) getData(lines []string, file string, debugLineNumber int, varVa
 	//find func line and adjust minLine if below
 	funcLine := findFuncLine(lines, debugLineNumber)
 	failingLineIndex, columnStart, columnEnd := findFailingLine(lines, funcLine, debugLineNumber)
-
-	if failingLineIndex != -1 {
-		printf("line %d of %s:%d", failingLineIndex+1, GetShortFilePath(file), failingLineIndex+1)
-	} else {
-		printf("error in %s (failing line not found, stack trace says func call is at line %d)", GetShortFilePath(file), debugLineNumber)
-	}
 
 	funcSrc := strings.Join(lines[funcLine:FindEndOfFunction(lines, funcLine)+1], "\n")
 
@@ -116,8 +115,10 @@ func (l *logger) getData(lines []string, file string, debugLineNumber int, varVa
 	usedVars := findUsedArgsLastWrite(funcLine, funcSrc, lines, argNames, varValues, failingArgs)
 
 	data := PrintSourceOptions{
-		FailingLine: failingLineIndex,
-		FuncLine:    funcLine,
+		DebugLine:     debugLineNumber,
+		ShortFileName: GetShortFilePath(file),
+		FailingLine:   failingLineIndex,
+		FuncLine:      funcLine,
 		Highlighted: map[int][]int{
 			failingLineIndex: {columnStart, columnEnd},
 		},
