@@ -64,7 +64,7 @@ import (
 )
 
 func Errorf(format string, source error, a ...any) error {
-	err := internal.PrintErro(source, a)
+	err := internal.PrintErro(source, a...)
 	if err != nil {
 		return err
 	}
@@ -72,7 +72,7 @@ func Errorf(format string, source error, a ...any) error {
 }
 
 func New(errorString string, source error, a ...interface{}) error {
-	err := internal.PrintErro(source, a)
+	err := internal.PrintErro(source, a...)
 	if err != nil {
 		return err
 	}
@@ -81,7 +81,7 @@ func New(errorString string, source error, a ...interface{}) error {
 }
 
 func NewE(myError error, source error, a ...interface{}) error {
-	err := internal.PrintErro(source, a)
+	err := internal.PrintErro(source, a...)
 	if err != nil {
 		return err
 	}
