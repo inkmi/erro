@@ -1,6 +1,6 @@
 <img src="https://raw.githubusercontent.com/StephanSchmidt/erro/master/ErroLogo.png" width="300">
 
-# Erro: Faster and Easier debugging in case of an error
+# Erro: Faster and easier debugging in case of an error
 
 ![Build state](https://github.com/StephanSchmidt/erro/actions/workflows/test.yml/badge.svg)  ![Go Version](https://img.shields.io/github/go-mod/go-version/StephanSchmidt/erro) ![Version](https://img.shields.io/github/v/tag/StephanSchmidt/erro?include_prereleases)  ![Issues](https://img.shields.io/github/issues/StephanSchmidt/erro) ![Report](https://goreportcard.com/badge/github.com/StephanSchmidt/erro)
 
