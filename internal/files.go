@@ -17,10 +17,8 @@ var (
 func ReadSource(filepath string) []string {
 	b, err := afero.ReadFile(fs, filepath)
 	if err != nil {
-		if LogTo != nil {
-			(*LogTo).Debug().Msgf("erro: cannot read file '%s': %s. If sources are not reachable in this environment, you should set getData=false in logger config.", filepath, err)
-		}
-		return nil
+		printf("erro: cannot read file '%s': %s. If sources are not reachable in this environment, you should set getData=false in logger config.", filepath, err)
+
 	}
 	lines := strings.Split(string(b), "\n")
 	return lines

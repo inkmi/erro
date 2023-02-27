@@ -33,7 +33,6 @@ func findFailingLine(lines []string, funcLine int, debugLine int) (int, int, int
 	for i := debugLine; i >= funcLine && i > 0; i-- { // going reverse from debug line to funcLine
 		// early skipping some cases
 		if strings.Trim(lines[i], " \n\t") == "" { // skip if line is blank
-			//	(*LogTo).Debug().Msgf(color.BlueString("%d: ignoring blank line", i))
 			continue
 		} else if len(lines[i]) >= 2 && lines[i][:2] == "//" { // skip if line is a comment line (note: comments of type '/*' can be stopped inline and code may be placed after it, therefore we should pass line if '/*' starts the line)
 			continue
