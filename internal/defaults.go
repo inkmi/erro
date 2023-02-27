@@ -4,8 +4,11 @@ import (
 	"github.com/rs/zerolog"
 )
 
+type printer func(format string, data ...interface{})
+
 var (
-	LogTo *zerolog.Logger = nil
+	Printer printer         = nil
+	LogTo   *zerolog.Logger = nil
 
 	DevMode = false
 

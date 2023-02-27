@@ -16,7 +16,11 @@ func min(a, b int) int {
 
 // printf is the function used to log
 func printf(format string, data ...interface{}) {
-	if LogTo != nil {
-		(*LogTo).Debug().Msgf(format, data...)
+	if Printer != nil {
+		Printer(format, data)
+	} else {
+		if LogTo != nil {
+			(*LogTo).Debug().Msgf(format, data...)
+		}
 	}
 }
