@@ -95,7 +95,9 @@ func (l *logger) printSource(lines []string, data PrintSourceOptions) {
 func (l *logger) getData(lines []string, file string, debugLineNumber int, varValues []interface{}) PrintSourceOptions {
 	//find func line and adjust minLine if below
 	funcLine := findFuncLine(lines, debugLineNumber)
-	failingLineIndex, columnStart, columnEnd, argNames := findFailingLine(lines, funcLine, debugLineNumber)
+	failingLineIndex, columnStart, columnEnd := findFailingLine(lines, funcLine, debugLineNumber)
+
+	argNames := ArgNames(lines[debugLineNumber-1])[2:]
 
 	if failingLineIndex != -1 {
 		printf("line %d of %s:%d", failingLineIndex+1, GetShortFilePath(file), failingLineIndex+1)

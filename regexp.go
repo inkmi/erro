@@ -21,10 +21,8 @@ var (
 )
 
 // findFailingLine finds line where <var> is defined, if Debug(<var>) is present on lines[debugLine]. funcLine serves as max
-func findFailingLine(lines []string, funcLine int, debugLine int) (failingLineIndex, columnStart, columnEnd int, argNames []string) {
+func findFailingLine(lines []string, funcLine int, debugLine int) (failingLineIndex, columnStart, columnEnd int) {
 	failingLineIndex = -1 //init error flag
-	argNames = ArgNames(lines[debugLine-1])[2:]
-
 	//find var name
 	varName := MatchVarName(lines[debugLine-1])
 
