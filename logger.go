@@ -8,13 +8,6 @@ import (
 	"strings"
 )
 
-// Logger interface allows to log an error, or to print source code lines. Check out NewLogger function to learn more about Logger objects and Config.
-type Logger interface {
-	Errorf(fmt string, err error, a ...interface{}) error
-	New(errorString string, err error, a ...interface{}) error
-	NewE(myErr error, source error, a ...interface{}) error
-}
-
 // Config holds the configuration for a logger
 type Config struct {
 	LinesBefore int //How many lines to print *before* the error line when printing source code
@@ -27,7 +20,7 @@ type logger struct {
 }
 
 func (l *logger) New(errorString string, source error, a ...interface{}) error {
-	err := printErro(l, source, a)
+	err := printErro(source, a)
 	if err != nil {
 		return err
 	}
@@ -36,7 +29,7 @@ func (l *logger) New(errorString string, source error, a ...interface{}) error {
 }
 
 func (l *logger) NewE(myErr error, source error, a ...interface{}) error {
-	err := printErro(l, source, a)
+	err := printErro(source, a)
 	if err != nil {
 		return err
 	}
@@ -44,14 +37,14 @@ func (l *logger) NewE(myErr error, source error, a ...interface{}) error {
 }
 
 func (l *logger) Errorf(format string, source error, a ...any) error {
-	err := printErro(l, source, a)
+	err := printErro(source, a)
 	if err != nil {
 		return err
 	}
 	return fmt.Errorf(format, source, a)
 }
 
-func printErro(l *logger, source error, a []any) error {
+func printErro(source error, a []any) error {
 	if DevMode {
 		if source == nil {
 			return errors.New("erro: no error given")
@@ -75,7 +68,7 @@ func printErro(l *logger, source error, a []any) error {
 			return errors.New("erro can't read source")
 		}
 
-		data := getData(lines, fileName, debugLine, a, l.config.LinesBefore, l.config.LinesAfter)
+		data := getData(lines, fileName, debugLine, a, DefaultConfig.LinesBefore, DefaultConfig.LinesAfter)
 		data.Stack = stackItems
 
 		printf("Error in %s: %s", callingObject, color.YellowString(source.Error()))

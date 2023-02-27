@@ -79,3 +79,8 @@ func findStartEnd2(failingLine string, start int) int {
 	}
 	return columnEnd
 }
+
+func findStartEnd(failingLine string, i0 int, i1 int) (int, int) {
+	end := findStartEnd2(failingLine, i0)
+	return i0, end
+}
