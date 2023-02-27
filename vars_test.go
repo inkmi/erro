@@ -15,10 +15,10 @@ func TestUsedArgs(t *testing.T) {
     erro.New("x", err, x)
 }
 `
-	args := []string{"x"}
-	failingArgs := []string{"y"}
+	erroArgs := []string{"x"}
+	failingArgs := []string{"x", "y"}
 	vals := []any{2}
-	u := findUsedArgsLastWrite(0, code, strings.Split(code, "\n"), args, vals, failingArgs)
+	u := findUsedArgsLastWrite(0, code, strings.Split(code, "\n"), erroArgs, vals, failingArgs)
 	u1 := UsedVar{
 		Name:            "x",
 		Value:           2,
