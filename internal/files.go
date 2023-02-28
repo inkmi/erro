@@ -14,14 +14,18 @@ var (
 	gopath = os.Getenv("GOPATH")
 )
 
-func ReadSource(filepath string) []string {
-	b, err := afero.ReadFile(fs, filepath)
+func ReadSourceFs(filepath string, afs afero.Fs) []string {
+	b, err := afero.ReadFile(afs, filepath)
 	if err != nil {
 		printf("erro: cannot read file '%s': %s. If sources are not reachable in this environment, you should set getData=false in logger config.", filepath, err)
 
 	}
 	lines := strings.Split(string(b), "\n")
 	return lines
+}
+
+func ReadSource(filepath string) []string {
+	return ReadSourceFs(filepath, fs)
 }
 
 func getShorterFilePath(filepath string, remove string) string {
