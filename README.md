@@ -4,7 +4,7 @@
 
 ![Build state](https://github.com/StephanSchmidt/erro/actions/workflows/test.yml/badge.svg)  ![Go Version](https://img.shields.io/github/go-mod/go-version/StephanSchmidt/erro) ![Version](https://img.shields.io/github/v/tag/StephanSchmidt/erro?include_prereleases)  ![Issues](https://img.shields.io/github/issues/StephanSchmidt/erro) ![Report](https://goreportcard.com/badge/github.com/StephanSchmidt/erro)
 
-<a href='https://github.com/jpoles1/gopherbadger' target='_blank'>![gopherbadger-tag-do-not-edit](https://img.shields.io/badge/Go%20Coverage-75%25-brightgreen.svg?longCache=true&style=flat)</a>
+<a href='https://github.com/jpoles1/gopherbadger' target='_blank'>![gopherbadger-tag-do-not-edit](https://img.shields.io/badge/Go%20Coverage-77%25-brightgreen.svg?longCache=true&style=flat)</a>
 
 *Forked from [snwfdhmp/errlog](https://github.com/snwfdhmp/errlog)*
 
