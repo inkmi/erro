@@ -24,3 +24,11 @@ func TestMaxMinus(t *testing.T) {
 	exp := 3
 	assert.Equal(t, exp, max(3, -1))
 }
+
+func TestPrintf(t *testing.T) {
+	tp := NewTestPrinter()
+	Printer = TestPrinterFunc(tp)
+	printf("Hello")
+	assert.Equal(t, 1, len(tp.Output))
+	assert.Equal(t, "Hello", tp.Output[0])
+}

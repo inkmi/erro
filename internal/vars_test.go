@@ -35,3 +35,28 @@ func TestUsedArgs(t *testing.T) {
 	assert.Equal(t, u1, u[0])
 	assert.Equal(t, u2, u[1])
 }
+
+func TestPrintUsedVariables(t *testing.T) {
+	tp := NewTestPrinter()
+	u1 := UsedVar{
+		Name:            "x",
+		Value:           2,
+		LastWrite:       10,
+		SourceLastWrite: "x = 2",
+	}
+	u2 := UsedVar{
+		Name:            "y",
+		Value:           nil,
+		LastWrite:       15,
+		SourceLastWrite: "y = 2",
+	}
+	Printer = TestPrinterFunc(tp)
+	printUsedVariables([]UsedVar{u1, u2})
+	assert.Equal(t, 5, len(tp.Output))
+	assert.Equal(t, "Variables:", tp.Output[0])
+	assert.Equal(t, " x : 2", tp.Output[1])
+	assert.Equal(t, " ╰╴ 10 : x = 2", tp.Output[2])
+	assert.Equal(t, " y : ?", tp.Output[3])
+	assert.Equal(t, " ╰╴ 15 : y = 2", tp.Output[4])
+
+}
