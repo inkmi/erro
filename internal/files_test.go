@@ -15,7 +15,10 @@ func TestShortFilePath(t *testing.T) {
 func TestReadSource(t *testing.T) {
 	appFS := afero.NewMemMapFs()
 	// create test files and directories
-	afero.WriteFile(appFS, "error.go", []byte("x = 4"), 0644)
+	err := afero.WriteFile(appFS, "error.go", []byte("x = 4"), 0644)
+	if err != nil {
+		panic(err)
+	}
 	source := ReadSourceFs("error.go", appFS)
 	assert.Equal(t, 1, len(source))
 	assert.Equal(t, "x = 4", source[0])

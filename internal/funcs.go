@@ -48,7 +48,7 @@ func extractArgs(s string) []string {
 		argStr := s[start+1 : end]
 		args = splitWithBraces(argStr, ',')
 	}
-	for i, _ := range args {
+	for i := range args {
 		args[i] = strings.TrimSpace(args[i])
 	}
 	return args

@@ -33,7 +33,7 @@ func PrintErro(source error, a ...any) error {
 
 		// Print Source code
 		lines := ReadSource(fileName)
-		if lines == nil || len(lines) == 0 {
+		if len(lines) == 0 {
 			return errors.New("erro can't read source")
 		}
 

@@ -2,3 +2,5 @@
 examples/local-test
 .idea/
 coverage.out
+cover.out
+cover.html
