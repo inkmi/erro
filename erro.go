@@ -64,8 +64,12 @@ import (
 	"github.com/rs/zerolog"
 )
 
-func SetDevMode() {
+func SetDevModeOn() {
 	internal.DevMode = true
+}
+
+func SetDevModeOff() {
+	internal.DevMode = false
 }
 
 func SetLogger(logger *zerolog.Logger) {
