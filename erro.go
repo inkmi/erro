@@ -18,7 +18,7 @@
 //
 // You can configure your own logger with these options :
 //
-//	type config struct {
+//	type Config struct {
 //		LinesBefore        int
 //		LinesAfter         int
 //		PrintStack         bool
@@ -29,7 +29,7 @@
 //
 // Example :
 //
-//	debug := erro.NewLogger(&erro.config{
+//	debug := erro.NewLogger(&erro.Config{
 //		LinesBefore:        2,
 //		LinesAfter:         1,
 //		PrintError:         true,
@@ -61,7 +61,16 @@ import (
 	"errors"
 	"fmt"
 	"github.com/StephanSchmidt/erro/internal"
+	"github.com/rs/zerolog"
 )
+
+func SetDevMode() {
+	internal.DevMode = true
+}
+
+func SetLogger(logger *zerolog.Logger) {
+	internal.LogTo = logger
+}
 
 func Errorf(format string, source error, a ...any) error {
 	err := internal.PrintErro(source, a...)

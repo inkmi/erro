@@ -7,12 +7,6 @@ import (
 	"strings"
 )
 
-// config holds the configuration for a logger
-type config struct {
-	LinesBefore int //How many lines to print *before* the error line when printing source code
-	LinesAfter  int //How many lines to print *after* the error line when printing source code
-}
-
 func PrintErro(source error, a ...any) error {
 	if DevMode {
 		if source == nil {
