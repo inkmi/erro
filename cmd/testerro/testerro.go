@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/rs/zerolog/log"
 )
@@ -10,8 +9,10 @@ import (
 func main() {
 	logger := log.With().Caller().Logger()
 
-	fmt.Println("Hello World")
+	logger.Info().Int("Hello", 42).Msg("Info example")
+	logger.Debug().Str("Hello", "🦄").Msg("Debug example")
+	logger.Warn().Str("Hello", "World").Msg("Warn example")
 
 	err := errors.New("Testerror")
-	logger.Error().Err(err).Str("Test", "Test").Msg("Test")
+	logger.Error().Err(err).Str("Test", "Test").Msg("Error example")
 }

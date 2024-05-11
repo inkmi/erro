@@ -35,6 +35,22 @@ comes from is clickable and takes you to that line.
 go install github.com/Inkmi/erro
 ```
 
+The log data needs to be structured as JSON.
+
+The log data needs to include caller information, for example
+
+`{ "caller": "testerro.go:22" }`
+
+Configuration depends on your logging library, for Zerolog it's
+
+`logger := log.With().Caller().Logger()`
+
+After `make build` you can test `erro` with
+
+```shell
+./bin/testerro 2>&1| ./bin/erro
+```
+
 ## License information
 
 MIT License
