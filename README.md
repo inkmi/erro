@@ -8,26 +8,25 @@
 
 *Forked from [snwfdhmp/errlog](https://github.com/snwfdhmp/errlog)*
 
-Erro (pronounced *'arrow'*) is a simple libary that helps finding the reasons for errors in your Golang code. When an error is created through **erro**, the source of the failing code is shown together with the stack trace and the variables that led to the error.
+Erro (pronounced *'arrow'*) is a simple tool that helps finding the reasons for errors in your Golang code.
 
-![Erro example outpuit](https://raw.githubusercontent.com/StephanSchmidt/erro/master/ErroExample.png)
+```
+yourProgram 2>&1 | erro
+```
+
+turns
+
+![Erro example outpuit](https://raw.githubusercontent.com/StephanSchmidt/erro/master/ErroStructured.png)
+
+into
+
+![Erro example outpuit](https://raw.githubusercontent.com/StephanSchmidt/erro/master/ErroPipe.png)
 
 
-## Introduction
-
-Use Erro to help understanding errors and **speed up debugging while you create amazing code** :
-
-- Highlight source code
-- **Detect and point out** which func call is causing the fail
-- Pretty stack trace
-- **No-op mode** for production
-
-## Get started
-
-### Install
+## Install
 
 ```shell
-go get github.com/StephanSchmidt/erro
+go install github.com/Inkmi/erro
 ```
 
 ## License information

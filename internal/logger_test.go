@@ -1,22 +1,23 @@
 package internal
 
 import (
-	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetData(t *testing.T) {
 	t.Parallel()
 	code := strings.Split(
-		`func add(x int, y int) int {
+		`func add(x int, y int) (int,error) {
 	x := 2
     x = 4
     err := calc(x,y)
     if err != nil {
-		return erro.Errorf("x", err, x)
+		return 0, erro.Errorf("x", err, x).Str("UserId", 1)
     }
-    return x
+    return x, nil
 }`, "\n")
 	data := getData(
 		code,
@@ -42,7 +43,7 @@ func TestGetData(t *testing.T) {
 			"y",
 			nil,
 			1,
-			"func add(x int, y int) int {",
+			"func add(x int, y int) (int,error) {",
 		},
 	}
 	assert.Equal(t, uv, data.UsedVars)

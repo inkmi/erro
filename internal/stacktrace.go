@@ -1,10 +1,11 @@
 package internal
 
 import (
-	"github.com/fatih/color"
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/fatih/color"
 )
 
 // StackTraceItem represents parsed information of a stack trace item

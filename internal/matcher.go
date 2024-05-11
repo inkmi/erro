@@ -8,8 +8,8 @@ import (
 // Debug regex with https://regex101.com/
 
 var (
-	regexpFuncLine                   = regexp.MustCompile(`^func\s[a-zA-Z0-9]+\(([^)]*)\)\s+[a-zA-Z0-9]*\s*{`)
-	regexpParseDebugLineParseVarName = regexp.MustCompile(`erro\.Errorf\(|erro\.New\(|erro\.NewE\(`)
+	regexpFuncLine                   = regexp.MustCompile(`^func\s[a-zA-Z0-9]+\(([^)]*)\)\s+[a-zA-Z0-9]*[^{]*{`)
+	regexpParseDebugLineParseVarName = regexp.MustCompile(`erro\.Errorf\(|erro\.New\(|erro\.Wrap\(`)
 )
 
 func MatchFunc(line string) bool {

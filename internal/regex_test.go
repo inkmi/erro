@@ -1,9 +1,10 @@
 package internal
 
 import (
-	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestFindStartEnding(t *testing.T) {

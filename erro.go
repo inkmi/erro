@@ -58,11 +58,45 @@
 package erro
 
 import (
-	"errors"
 	"fmt"
+
 	"github.com/StephanSchmidt/erro/internal"
 	"github.com/rs/zerolog"
 )
+
+type ErroError struct {
+	err  error
+	data map[string]any
+}
+
+type ErrorData interface {
+	ErrorData() map[string]any
+}
+
+func (ee ErroError) Error() string {
+	return ""
+}
+
+func (ee ErroError) ErrorData() map[string]any {
+	return ee.data
+}
+
+func (ee *ErroError) Str(key string, value any) *ErroError {
+	ee.data[key] = value
+	return ee
+}
+
+func (ee ErroError) LogTo(log zerolog.Logger) {
+	LogError(log, ee)
+}
+
+func LogError(log zerolog.Logger, err ErroError) {
+	event := log.Error()
+	for k, v := range err.ErrorData() {
+		event = event.Interface(k, v)
+	}
+	event.Err(err)
+}
 
 func SetDevModeOn() {
 	internal.DevMode = true
@@ -76,27 +110,50 @@ func SetLogger(logger *zerolog.Logger) {
 	internal.LogTo = logger
 }
 
-func Errorf(format string, source error, a ...any) error {
-	err := internal.PrintErro(source, a...)
-	if err != nil {
-		return err
+// ErrorF("User %s could not be found", err, userId).Str("UserId", userId)
+
+func Errorf(format string, a ...any) ErroError {
+	if len(a) > 0 {
+		// Attempt to type assert the first argument to 'error'.
+		if errObject, ok := a[0].(error); ok {
+			err := internal.PrintErro(errObject, a[1:]...)
+			if err != nil {
+				// Do nothing
+			}
+			ee := ErroError{
+				err:  fmt.Errorf(format, errObject, a),
+				data: make(map[string]any),
+			}
+			return ee
+		}
 	}
-	return fmt.Errorf(format, source, a)
+	ee := ErroError{
+		err:  fmt.Errorf(format, a...),
+		data: make(map[string]any),
+	}
+	return ee
 }
 
-func New(errorString string, source error, a ...interface{}) error {
-	err := internal.PrintErro(source, a...)
-	if err != nil {
-		return err
+func Wrap(source error, a ...interface{}) ErroError {
+	e := internal.PrintErro(source, a...)
+	if e != nil {
+		// Do nothing
 	}
-	n := errors.New(errorString)
-	return errors.Join(n, source)
+	ee := ErroError{
+		err:  source,
+		data: make(map[string]any),
+	}
+	return ee
 }
 
-func NewE(myError error, source error, a ...interface{}) error {
-	err := internal.PrintErro(source, a...)
-	if err != nil {
-		return err
+func New(err error, source error, a ...interface{}) ErroError {
+	e := internal.PrintErro(source, a...)
+	if e != nil {
+		// Do nothing
 	}
-	return errors.Join(myError, source)
+	ee := ErroError{
+		err:  err,
+		data: make(map[string]any),
+	}
+	return ee
 }

@@ -2,10 +2,25 @@ package internal
 
 import (
 	"errors"
-	"github.com/fatih/color"
+	"fmt"
 	"runtime/debug"
 	"strings"
+
+	"github.com/fatih/color"
 )
+
+func PrintError(fileName string, debugLine int) error {
+	// Print Source code
+	lines := ReadSource(fileName)
+	if len(lines) == 0 {
+		return errors.New("erro can't read source")
+	}
+
+	red := color.New(color.FgHiRed).SprintFunc()
+
+	fmt.Printf("%s%s %s\n", red(debugLine), red(":"), red(strings.TrimSpace(lines[debugLine-1])))
+	return nil
+}
 
 func PrintErro(source error, a ...any) error {
 	if DevMode {

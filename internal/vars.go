@@ -1,8 +1,9 @@
 package internal
 
 import (
-	"github.com/fatih/color"
 	"strings"
+
+	"github.com/fatih/color"
 )
 
 type UsedVar struct {

@@ -1,8 +1,9 @@
 package internal
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestFuncNoArgsMatch(t *testing.T) {
@@ -40,16 +41,6 @@ func TestVarNameNew(t *testing.T) {
 	assert.NotNil(t, varName)
 	if varName != nil {
 		assert.Equal(t, "e", *varName)
-	}
-}
-
-func TestVarNameNewE(t *testing.T) {
-	t.Parallel()
-	line := "erro.NewE(e1, e2)\n"
-	varName := MatchVarName(line)
-	assert.NotNil(t, varName)
-	if varName != nil {
-		assert.Equal(t, "e2", *varName)
 	}
 }
 
@@ -100,12 +91,19 @@ func TestSplitWithBraces(t *testing.T) {
 func TestFindFuncLine(t *testing.T) {
 	lines := []string{
 		"x := 2",
-		"func add(x int) {",
-		"  return x + 1",
+		"func add(x int) (x, error) {",
+		"  if x < 0 { return errors.Errorf(\"Error\") }" +
+			"  return x + 1, nil",
 		"}",
 	}
 	funcLine := findFuncLine(lines, 1)
 	assert.Equal(t, 1, funcLine)
+}
+
+func TestFindOpeningClose(t *testing.T) {
+	start, end := OpeningClosePos("    (a,b,c,(x,y),d).(f.g)")
+	assert.Equal(t, 4, start)
+	assert.Equal(t, 18, end)
 }
 
 func TestFindFuncLineBeforeFuncReturnsError(t *testing.T) {

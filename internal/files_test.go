@@ -1,9 +1,10 @@
 package internal
 
 import (
+	"testing"
+
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestShortFilePath(t *testing.T) {

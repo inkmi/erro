@@ -1,6 +1,8 @@
 package internal
 
-import "strings"
+import (
+	"strings"
+)
 
 // findFuncLine finds line where func is declared
 func findFuncLine(lines []string, lineNumber int) int {
@@ -10,6 +12,31 @@ func findFuncLine(lines []string, lineNumber int) int {
 		}
 	}
 	return -1
+}
+
+func OpeningClosePos(s string) (int, int) {
+	var stack []rune
+	start := -1
+	end := -1
+	for i, c := range s {
+		switch c {
+		case '(':
+			if start == -1 && len(stack) == 0 {
+				start = i
+			}
+			stack = append(stack, c)
+		case ')':
+			if len(stack) > 0 && stack[len(stack)-1] == '(' {
+				stack = stack[:len(stack)-1]
+			} else {
+				panic("unmatched closing brace")
+			}
+			if end == -1 && len(stack) == 0 {
+				end = i
+			}
+		}
+	}
+	return start, end
 }
 
 func splitWithBraces(s string, sep rune) []string {
@@ -42,8 +69,7 @@ func splitWithBraces(s string, sep rune) []string {
 
 func extractArgs(s string) []string {
 	var args []string
-	start := strings.Index(s, "(")
-	end := strings.LastIndex(s, ")")
+	start, end := OpeningClosePos(s)
 	if start != -1 && end != -1 && end > start {
 		argStr := s[start+1 : end]
 		args = splitWithBraces(argStr, ',')

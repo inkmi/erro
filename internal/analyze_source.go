@@ -7,27 +7,28 @@ import (
 )
 
 func FindEndOfFunction(srcLines []string, lineWithFunctionStart int) int {
-	stack := make([]rune, 0)
-	for i := lineWithFunctionStart; i < len(srcLines); i++ {
-		line := srcLines[i]
-		for _, char := range line {
-			switch char {
-			case '{':
-				stack = append(stack, char)
-			case '}':
-				if len(stack) == 0 {
-					// Error: closing brace without matching opening brace
-					return -1
+	if lineWithFunctionStart >= 0 {
+		stack := make([]rune, 0)
+		for i := lineWithFunctionStart; i < len(srcLines); i++ {
+			line := srcLines[i]
+			for _, char := range line {
+				switch char {
+				case '{':
+					stack = append(stack, char)
+				case '}':
+					if len(stack) == 0 {
+						// Error: closing brace without matching opening brace
+						return -1
+					}
+					stack = stack[:len(stack)-1]
 				}
-				stack = stack[:len(stack)-1]
+			}
+			if len(stack) == 0 {
+				// Found the end of the function block
+				return i
 			}
 		}
-		if len(stack) == 0 {
-			// Found the end of the function block
-			return i
-		}
 	}
-
 	// Error: end of file reached without finding matching closing brace
 	return -1
 }

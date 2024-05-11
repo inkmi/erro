@@ -3,11 +3,12 @@ package main
 import (
 	"errors"
 	"fmt"
+	"os"
+
 	"github.com/StephanSchmidt/erro"
 	"github.com/StephanSchmidt/erro/internal"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"os"
 )
 
 func main() {
@@ -35,7 +36,7 @@ func someBigFunction(y int) error {
 
 	x = 2
 	if e := someNastyFunction(x, y); e != nil {
-		return erro.Errorf("Can't call nasty function", e, x)
+		return erro.Errorf("Can't call nasty function %w %x", e, x)
 	}
 
 	someSmallFunction()

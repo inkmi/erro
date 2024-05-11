@@ -1,9 +1,10 @@
 package internal
 
 import (
-	"github.com/spf13/afero"
 	"os"
 	"strings"
+
+	"github.com/spf13/afero"
 )
 
 var (
