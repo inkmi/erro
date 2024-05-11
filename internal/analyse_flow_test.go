@@ -72,13 +72,13 @@ func TestFindErrorOrigin(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := FindErrorOrigin(tt.lines, tt.logLine)
+			got, err := GolangFindErrorOrigin(tt.lines, tt.logLine)
 			if (err != nil) != (tt.expectedError != "") || (err != nil && err.Error() != tt.expectedError) {
-				t.Errorf("FindErrorOrigin() error = %v, expectedError %v", err, tt.expectedError)
+				t.Errorf("GolangFindErrorOrigin() error = %v, expectedError %v", err, tt.expectedError)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.expected) {
-				t.Errorf("FindErrorOrigin() got = %v, expected %v", got, tt.expected)
+				t.Errorf("GolangFindErrorOrigin() got = %v, expected %v", got, tt.expected)
 			}
 		})
 	}
