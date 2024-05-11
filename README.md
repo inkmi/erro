@@ -6,7 +6,7 @@
 
 <a href='https://github.com/jpoles1/gopherbadger' target='_blank'>![gopherbadger-tag-do-not-edit](https://img.shields.io/badge/Go%20Coverage-79%25-brightgreen.svg?longCache=true&style=flat)</a>
 
-*Forked from [snwfdhmp/errlog](https://github.com/snwfdhmp/errlog)*
+*Initially forked from [snwfdhmp/errlog](https://github.com/snwfdhmp/errlog)*
 
 Erro (pronounced *'arrow'*) is a simple tool that helps finding the reasons for errors in your Golang code.
 
@@ -16,7 +16,7 @@ yourProgram 2>&1 | erro
 
 turns
 
-![Erro example outpuit](https://raw.githubusercontent.com/StephanSchmidt/erro/master/ErroStructured.png)
+![Erro example outpuit](https://raw.githubusercontent.com/StephanSchmidt/erro/master/ErrorStructured.png)
 
 into
 

@@ -4,3 +4,5 @@ examples/local-test
 coverage.out
 cover.out
 cover.html
+bin/
+tmp/
