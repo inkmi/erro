@@ -33,6 +33,8 @@ comes from is clickable and takes you to that line.
 ![Erro example Jetbrains output](https://raw.githubusercontent.com/inkmi/erro/master/ErroPipeIdea.png)
 
 
+## Example code
+
 ```go
 func main() {
     logger := log.With().Caller().Logger()
