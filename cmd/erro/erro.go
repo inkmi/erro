@@ -141,8 +141,7 @@ func main() {
 		// Extract data preserving other fields as a sub-JSON
 		level, ok := jsonMap["level"].(string)
 		if !ok {
-			fmt.Fprintf(os.Stderr, "Log entry does not contain a level field\n")
-			continue
+			level = "unknown"
 		}
 
 		delete(jsonMap, "level") // Remove the level so only data remains
@@ -232,6 +231,7 @@ func main() {
 			fmt.Println(red("ERROR: " + errorParse))
 
 			internal.PrintError(fileName, lineNumber)
+
 		}
 
 	}
