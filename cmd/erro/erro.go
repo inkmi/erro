@@ -230,7 +230,10 @@ func main() {
 
 			fmt.Println(red("ERROR: " + errorParse))
 
-			internal.PrintError(fileName, lineNumber)
+			err = internal.PrintError(fileName, lineNumber)
+			if err != nil {
+				fmt.Println(err)
+			}
 
 		}
 

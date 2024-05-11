@@ -13,6 +13,16 @@ func TestFindErrorOrigin(t *testing.T) {
 		expected      []int
 		expectedError string
 	}{
+		{name: "",
+			lines: []string{
+				"// some comment",
+				"err := someBigFunction(2)",
+				"logger.Error().Err(err).Str(\"Test\", \"Test\").Msg(\"Error example\")",
+			},
+			logLine:       3,
+			expected:      []int{1, 1},
+			expectedError: "",
+		},
 		{
 			name: "Simple Declaration",
 			lines: []string{
@@ -21,7 +31,7 @@ func TestFindErrorOrigin(t *testing.T) {
 				"logger.Error().Err(err).Msg(\"Error occurred\")",
 			},
 			logLine:       3,
-			expected:      []int{1, 1},
+			expected:      []int{0, 0},
 			expectedError: "",
 		},
 		{
@@ -32,7 +42,7 @@ func TestFindErrorOrigin(t *testing.T) {
 				"logger.Error().Err(err).Msg(\"Failure\")",
 			},
 			logLine:       3,
-			expected:      []int{1, 1},
+			expected:      []int{0, 0},
 			expectedError: "",
 		},
 		{
@@ -44,7 +54,7 @@ func TestFindErrorOrigin(t *testing.T) {
 				"logger.Error().Err(err).Msg(\"Updated error\")",
 			},
 			logLine:       4,
-			expected:      []int{2, 2},
+			expected:      []int{1, 1},
 			expectedError: "",
 		},
 		{

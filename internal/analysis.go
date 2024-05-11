@@ -31,7 +31,7 @@ func PrintError(fileName string, debugLine int) error {
 			fmt.Printf("%s%s%s%s %s\n", red(ExtractFilename(fileName)), red(":"), red(debugLine), red(":"), red(strings.TrimSpace(lines[debugLine-1])))
 
 		} else {
-			lineNo := assignment[0] + 1
+			lineNo := assignment[0]
 			fmt.Printf("%s%s%s%s %s\n", red(ExtractFilename(fileName)), red(":"), red(lineNo+1), red(":"), red(strings.TrimSpace(lines[lineNo])))
 		}
 	} else {

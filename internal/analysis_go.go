@@ -17,35 +17,30 @@ func GolangFindErrorOrigin(lines []string, logLine int) ([]int, error) {
 			break
 		}
 	}
-
 	if errVarName == "" {
 		return nil, fmt.Errorf("error variable not found in the log statement")
 	}
 
 	// Scan backwards to find where this variable was defined or assigned
-	for i := logLine - 2; i >= 0; i-- {
+	for i := logLine - 1; i >= 0; i-- {
 		line := strings.ReplaceAll(lines[i], " ", "") // Removing spaces to simplify detection
 		if strings.Contains(line, errVarName) {
 			// Check if this line includes an assignment that impacts the error variable
 			if strings.Contains(line, ":=") || strings.Contains(line, "=") {
 				assignmentPart := strings.SplitAfter(line, "=")[0]
+				if strings.Contains(assignmentPart, "!=") {
+					continue
+				}
 				if strings.Contains(assignmentPart, ":=") {
 					assignmentPart = strings.SplitAfter(assignmentPart, ":=")[0]
 				}
-
 				// Parse all variables in the assignment
 				vars := strings.Split(strings.Split(assignmentPart, "=")[0], ",")
 				for _, v := range vars {
 					if strings.Contains(v, errVarName) {
 						// Now find the complete statement, handling multiline statements
 						startLine := i
-						for startLine > 0 && strings.TrimSpace(lines[startLine-1]) == "" {
-							startLine--
-						}
-						endLine := i + 1
-						for endLine < len(lines) && strings.TrimSpace(lines[endLine]) == "" {
-							endLine++
-						}
+						endLine := i
 						return []int{startLine, endLine - 1}, nil // Convert to 1-based index for line numbers
 					}
 				}
