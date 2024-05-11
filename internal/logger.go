@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/color"
 )
 
-func findErrorOrigin(lines []string, logLine int) ([]int, error) {
+func FindErrorOrigin(lines []string, logLine int) ([]int, error) {
 	var errVarName string
 
 	// Parse the log line to find the error variable name
@@ -50,7 +50,7 @@ func findErrorOrigin(lines []string, logLine int) ([]int, error) {
 						for endLine < len(lines) && strings.TrimSpace(lines[endLine]) == "" {
 							endLine++
 						}
-						return []int{startLine + 1, endLine}, nil // Convert to 1-based index for line numbers
+						return []int{startLine, endLine - 1}, nil // Convert to 1-based index for line numbers
 					}
 				}
 			}
@@ -58,6 +58,19 @@ func findErrorOrigin(lines []string, logLine int) ([]int, error) {
 	}
 
 	return nil, fmt.Errorf("no assignment for %s found before the log statement", errVarName)
+}
+
+func ExtractFilename(fullPath string) string {
+	// Split the path by the "/" character
+	parts := strings.Split(fullPath, "/")
+
+	// The last element will be the filename with line number
+	if len(parts) > 0 {
+		return parts[len(parts)-1]
+	}
+
+	// If there's no "/" or input is empty, return the original input
+	return fullPath
 }
 
 func PrintError(fileName string, debugLine int) error {
@@ -69,16 +82,16 @@ func PrintError(fileName string, debugLine int) error {
 
 	red := color.New(color.FgHiRed).SprintFunc()
 
-	assignment, err := findErrorOrigin(lines, debugLine)
+	assignment, err := FindErrorOrigin(lines, debugLine)
 	if err != nil {
 		return err
 	}
 	if len(assignment) == 0 {
-		fmt.Printf("%s%s %s\n", red(debugLine), red(":"), red(strings.TrimSpace(lines[debugLine-1])))
+		fmt.Printf("%s%s%s%s %s\n", red(ExtractFilename(fileName)), red(":"), red(debugLine), red(":"), red(strings.TrimSpace(lines[debugLine-1])))
 
 	} else {
-		lineNo := assignment[0]
-		fmt.Printf("%s%s %s\n", red(lineNo), red(":"), red(strings.TrimSpace(lines[lineNo])))
+		lineNo := assignment[0] + 1
+		fmt.Printf("%s%s%s%s %s\n", red(ExtractFilename(fileName)), red(":"), red(lineNo+1), red(":"), red(strings.TrimSpace(lines[lineNo])))
 	}
 
 	return nil

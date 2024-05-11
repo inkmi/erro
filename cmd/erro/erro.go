@@ -45,7 +45,7 @@ type LogLevel struct {
 	Color color.Attribute `json:"color"`
 }
 
-func extractFilename(fullPath string) string {
+func ExtractFilename(fullPath string) string {
 	// Split the path by the "/" character
 	parts := strings.Split(fullPath, "/")
 
@@ -212,7 +212,7 @@ func main() {
 		stamp := time.Unix(ts, 0).Format("3:04PM")
 
 		// Now you can process each log entry
-		fmt.Printf("%s %s %s %s %s %s\n", black(stamp), extractFilename(caller), c(IntToLogLevel(entry.Level.Level)), cyan(">"), message, data)
+		fmt.Printf("%s %s %s %s %s %s\n", black(stamp), ExtractFilename(caller), c(IntToLogLevel(entry.Level.Level)), cyan(">"), message, data)
 
 		if entry.Level.Level == 4 {
 			red := color.New(color.FgHiRed).SprintFunc()
