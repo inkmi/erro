@@ -8,7 +8,10 @@
 
 *Initially forked from [snwfdhmp/errlog](https://github.com/snwfdhmp/errlog)*
 
-Erro (pronounced *'arrow'*) is a simple tool that helps finding the reasons for errors in your Golang code.
+Erro (pronounced *'arrow'*) is a simple tool that helps finding the reasons for errors in your code.
+
+Currently supported languages:
+* Golang
 
 ```
 yourProgram 2>&1 | erro
