@@ -32,6 +32,24 @@ comes from is clickable and takes you to that line.
 
 ![Erro example Jetbrains output](https://raw.githubusercontent.com/inkmi/erro/master/ErroPipeIdea.png)
 
+
+```go
+func main() {
+    logger := log.With().Caller().Logger()
+
+    logger.Info().Msg("Welcome to erro 🧑‍🚀")
+    logger.Info().Msg("https://github.com/inkmi/erro")
+    logger.Info().Int("Hello", 42).Msg("Info example")
+    logger.Trace().Int("Hello", 23).Msg("Trace example")
+    logger.Debug().Str("Hello", "🦄").Msg("Debug example")
+    logger.Warn().Str("Hello", "World").Msg("Warn example")
+
+    err := errors.New("Testerror")
+    logger.Error().Err(err).Str("Test", "Test").Msg("Error example")
+    logger.Info().Int("After", 1).Int("Days", 2).Msg("After the error")
+}
+```
+
 ## Install
 
 ```shell
