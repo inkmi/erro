@@ -16,18 +16,16 @@ yourProgram 2>&1 | erro
 
 turns
 
-![Erro example outpuit](https://raw.githubusercontent.com/StephanSchmidt/erro/master/ErrorStructured.png)
+![Erro example structured log](https://raw.githubusercontent.com/StephanSchmidt/erro/master/ErrorStructured.png)
 
 into
 
-![Erro example outpuit](https://raw.githubusercontent.com/StephanSchmidt/erro/master/ErroPipe.png)
-
+![Erro example pipe output](https://raw.githubusercontent.com/StephanSchmidt/erro/master/ErroPipe.png)
 
 In an IDE like JetBrains Golang, the line where the error
 comes from is clickable and takes you to that line.
 
-![Erro example outpuit](https://raw.githubusercontent.com/StephanSchmidt/erro/master/ErroPipeIdea.png)
-
+![Erro example Jetbrains output](https://raw.githubusercontent.com/StephanSchmidt/erro/master/ErroPipeIdea.png)
 
 ## Install
 
