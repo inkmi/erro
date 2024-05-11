@@ -41,7 +41,7 @@ func GolangFindErrorOrigin(lines []string, logLine int) ([]int, error) {
 						// Now find the complete statement, handling multiline statements
 						startLine := i
 						endLine := i
-						return []int{startLine, endLine - 1}, nil // Convert to 1-based index for line numbers
+						return []int{startLine, endLine}, nil // Convert to 1-based index for line numbers
 					}
 				}
 			}
