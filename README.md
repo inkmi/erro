@@ -13,6 +13,8 @@ Erro (pronounced *'arrow'*) is a simple tool that helps finding the reasons for 
 Currently supported languages:
 * Golang
 
+Piping your structured log into `erro`
+
 ```
 yourProgram 2>&1 | erro
 ```
