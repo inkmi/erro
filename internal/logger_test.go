@@ -31,7 +31,7 @@ func TestGetData(t *testing.T) {
 	assert.Equal(t, 0, data.FuncLine)
 	assert.Equal(t, 2, data.StartLine)
 	assert.Equal(t, 8, data.EndLine)
-	assert.Equal(t, 6, data.DebugLine)
+	assert.Equal(t, 6, data.LogLine)
 	uv := []UsedVar{
 		{
 			"x",

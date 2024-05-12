@@ -19,8 +19,10 @@ func main() {
 	logger.Warn().Str("Hello", "World").Msg("Warn example")
 
 	err := someBigFunction(2)
+	logger.Info().Int("Between", 1).Int("Secs", 2).Msg("Between the error")
+	logger.Info().Int("Between", 1).Int("Secs", 2).Msg("Between the error")
 	logger.Error().Err(err).Str("Test", "Test").Msg("Error example")
-	logger.Info().Int("After", 1).Int("Days", 2).Msg("After the error")
+	logger.Info().Int("After", 1).Int("Days", 2).Msg("After the errors")
 }
 
 func someBigFunction(y int) error {

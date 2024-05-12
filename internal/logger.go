@@ -53,13 +53,55 @@ func PrintErro(source error, a ...any) error {
 		if data.FailingLine != -1 {
 			printf("line %d of %s:%d", data.FailingLine+1, data.ShortFileName, data.FailingLine+1)
 		} else {
-			printf("error in %s (failing line not found, stack trace says func call is at line %d)", data.ShortFileName, data.DebugLine)
+			printf("error in %s (failing line not found, stack trace says func call is at line %d)", data.ShortFileName, data.LogLine)
 		}
 		printSource(lines, data)
 		printUsedVariables(data.UsedVars)
 		printStack(data.Stack)
 	}
 	return nil
+}
+
+func GoGetData(
+	lines []string,
+	file string,
+	logLine int,
+	linesBefore int,
+	linesAfter int,
+) (*PrintSourceOptions, error) {
+
+	funcLine := findFuncLine(lines, logLine)
+
+	assignment, err := GolangFindErrorOrigin(lines, logLine)
+	if err != nil {
+		return nil, err
+	}
+
+	failingLineIndex := assignment[0]
+	columnStart := 0
+	columnEnd := 2
+
+	var failingArgs []string
+	if failingLineIndex > -1 {
+		failingArgs = extractArgs(lines[failingLineIndex][columnStart:])
+	}
+
+	funcSrc := strings.Join(lines[funcLine:GoFindEndOfFunction(lines, funcLine)+1], "\n")
+	usedVars := GoFindUsedArgsLastWrite(funcLine, funcSrc, lines, failingArgs)
+
+	data := PrintSourceOptions{
+		LogLine:       logLine,
+		ShortFileName: getShortFilePath(file),
+		FailingLine:   failingLineIndex,
+		FuncLine:      funcLine,
+		Highlighted: map[int][]int{
+			failingLineIndex: {columnStart, columnEnd},
+		},
+		StartLine: max(funcLine, logLine-linesBefore),
+		EndLine:   logLine + linesAfter,
+		UsedVars:  usedVars,
+	}
+	return &data, nil
 }
 
 // DebugSource prints certain lines of source code of a file for debugging, using (*logger).config as configurations
@@ -72,7 +114,7 @@ func getData(lines []string, file string, debugLineNumber int,
 	funcLine := findFuncLine(lines, debugLineNumber)
 	failingLineIndex, columnStart, columnEnd := findFailingLine(lines, funcLine, debugLineNumber)
 
-	funcSrc := strings.Join(lines[funcLine:FindEndOfFunction(lines, funcLine)+1], "\n")
+	funcSrc := strings.Join(lines[funcLine:GoFindEndOfFunction(lines, funcLine)+1], "\n")
 
 	var argNames []string
 	if debugLineNumber > -1 {
@@ -85,7 +127,7 @@ func getData(lines []string, file string, debugLineNumber int,
 	usedVars := findUsedArgsLastWrite(funcLine, funcSrc, lines, argNames, varValues, failingArgs)
 
 	data := PrintSourceOptions{
-		DebugLine:     debugLineNumber,
+		LogLine:       debugLineNumber,
 		ShortFileName: getShortFilePath(file),
 		FailingLine:   failingLineIndex,
 		FuncLine:      funcLine,

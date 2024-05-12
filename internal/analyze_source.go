@@ -6,7 +6,7 @@ import (
 	"go/token"
 )
 
-func FindEndOfFunction(srcLines []string, lineWithFunctionStart int) int {
+func GoFindEndOfFunction(srcLines []string, lineWithFunctionStart int) int {
 	if lineWithFunctionStart >= 0 {
 		stack := make([]rune, 0)
 		for i := lineWithFunctionStart; i < len(srcLines); i++ {
@@ -33,7 +33,7 @@ func FindEndOfFunction(srcLines []string, lineWithFunctionStart int) int {
 	return -1
 }
 
-func lastWriteToVar(s string, varName string) int {
+func GoLastWriteToVar(s string, varName string) int {
 	src := "package main\n" + s
 	fset := token.NewFileSet()
 	node, err := parser.ParseFile(fset, "example.go", src, 0)

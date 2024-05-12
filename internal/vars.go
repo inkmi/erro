@@ -13,6 +13,31 @@ type UsedVar struct {
 	SourceLastWrite string
 }
 
+func GoFindUsedArgsLastWrite(
+	funcLine int,
+	funcSrc string,
+	src []string,
+	failingArgs []string) []UsedVar {
+
+	var usedVars []UsedVar
+	for _, fa := range failingArgs {
+		lastWrite := GoLastWriteToVar(funcSrc, fa)
+		lastWriteSrc := ""
+		if lastWrite > -1 {
+			lastWrite = lastWrite + funcLine
+			lastWriteSrc = strings.TrimSpace(src[lastWrite-1])
+		}
+		uv := UsedVar{
+			Name:            fa,
+			Value:           nil,
+			LastWrite:       lastWrite,
+			SourceLastWrite: lastWriteSrc,
+		}
+		usedVars = append(usedVars, uv)
+	}
+	return usedVars
+}
+
 func findUsedArgsLastWrite(
 	funcLine int,
 	funcSrc string,
@@ -23,7 +48,7 @@ func findUsedArgsLastWrite(
 
 	var usedVars []UsedVar
 	for i, ar := range argNames {
-		lastWrite := lastWriteToVar(funcSrc, ar)
+		lastWrite := GoLastWriteToVar(funcSrc, ar)
 		uv := UsedVar{
 			Name:            ar,
 			Value:           varValues[i],
@@ -33,7 +58,7 @@ func findUsedArgsLastWrite(
 		usedVars = append(usedVars, uv)
 	}
 	for _, fa := range diff(failingArgs, argNames) {
-		lastWrite := lastWriteToVar(funcSrc, fa)
+		lastWrite := GoLastWriteToVar(funcSrc, fa)
 		lastWriteSrc := ""
 		if lastWrite > -1 {
 			lastWrite = lastWrite + funcLine

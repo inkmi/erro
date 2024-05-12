@@ -13,7 +13,7 @@ func add(y int) int {
    x := 3
    return y + x
 }`
-	lastWrite := lastWriteToVar(src, "x")
+	lastWrite := GoLastWriteToVar(src, "x")
 	assert.Equal(t, 3, lastWrite)
 }
 
@@ -23,7 +23,7 @@ func add(y int) int {
    x := 3
    return y + x
 }`
-	lastWrite := lastWriteToVar(src, "z")
+	lastWrite := GoLastWriteToVar(src, "z")
 	assert.Equal(t, -1, lastWrite)
 }
 
@@ -34,7 +34,7 @@ func add(y int) int {
    x = 3
    return y + x
 }`
-	lastWrite := lastWriteToVar(src, "x")
+	lastWrite := GoLastWriteToVar(src, "x")
 	assert.Equal(t, 4, lastWrite)
 }
 
@@ -45,7 +45,7 @@ func add(y int) int {
    x = 3
    return y + x
 }`
-	lastWrite := lastWriteToVar(src, "y")
+	lastWrite := GoLastWriteToVar(src, "y")
 	assert.Equal(t, 2, lastWrite)
 }
 
@@ -65,6 +65,6 @@ func sub(y int) int {
 }
 `
 	lines := strings.Split(src, "\n")
-	endOfFunction := FindEndOfFunction(lines, 1)
+	endOfFunction := GoFindEndOfFunction(lines, 1)
 	assert.Equal(t, 7, endOfFunction)
 }

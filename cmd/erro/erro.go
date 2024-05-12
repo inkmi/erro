@@ -228,9 +228,10 @@ func main() {
 				fileName = files[fileName][0]
 			}
 
-			fmt.Println(red("ERROR: " + errorParse))
-
+			fmt.Println(red("-----------------------------"))
+			fmt.Println(red("    ERROR: " + errorParse))
 			err = internal.PrintError(fileName, lineNumber)
+			fmt.Println(red("-----------------------------"))
 			if err != nil {
 				fmt.Println(err)
 			}

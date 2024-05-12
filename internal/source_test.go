@@ -18,7 +18,7 @@ Errorf("x", err, x, y)
 }
 `, "\n")
 	data := PrintSourceOptions{
-		DebugLine:     4,
+		LogLine:       4,
 		ShortFileName: getShortFilePath("error.go"),
 		FailingLine:   3,
 		FuncLine:      0,

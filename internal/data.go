@@ -5,7 +5,7 @@ type PrintSourceOptions struct {
 	ShortFileName string
 	FuncLine      int
 	FailingLine   int
-	DebugLine     int
+	LogLine       int
 	StartLine     int
 	EndLine       int
 	Highlighted   map[int][]int
