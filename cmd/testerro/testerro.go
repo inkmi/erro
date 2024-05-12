@@ -34,6 +34,7 @@ func someBigFunction(y int) error {
 	someDumbFunction()
 
 	x = 2
+
 	if err := someNastyFunction(x, y); err != nil {
 		log.Error().Err(err).Int("x", x).Int("y", y).Msg("Error example")
 		return errors.New("can't call nasty function")

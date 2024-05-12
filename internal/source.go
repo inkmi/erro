@@ -39,7 +39,7 @@ func printSource(lines []string, opts PrintSourceOptions) {
 			printf("    %s:%d %s\n", opts.ShortFileName, filteredVars[i].LastWrite, color.RedString(filteredVars[i].SourceLastWrite))
 		}
 
-		if filteredVars[len(filteredVars)-1].LastWrite > opts.FailingLine {
+		if filteredVars[len(filteredVars)-1].LastWrite < opts.FailingLine {
 			printf("    %s\n", color.YellowString("..."))
 		}
 	}
