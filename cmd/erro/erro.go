@@ -121,6 +121,9 @@ func formatJsonMap(jsonData map[string]interface{}) string {
 }
 
 func main() {
+	internal.Printer = func(format string, data ...interface{}) {
+		fmt.Printf(format, data...)
+	}
 
 	files, _ := readFilesInDirectory(".")
 

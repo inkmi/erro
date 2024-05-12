@@ -35,24 +35,9 @@ func PrintError(fileName string, debugLine int) error {
 		if err != nil {
 			return err
 		}
-		red := color.New(color.FgHiRed).SprintFunc()
 
-		for _, uv := range data.UsedVars {
-			if isValidVariable(uv.Name) {
-				fmt.Printf("    %s%s%s %s%s %s\n", red(ExtractFilename(fileName)), red(":"), red(uv.LastWrite),
-					red(uv.Name),
-					red(":"),
-					red(uv.SourceLastWrite),
-				)
-			}
-		}
-
-		if data.FailingLine == 0 {
-			fmt.Printf("    %s%s%s %s\n", red(ExtractFilename(fileName)), red(":"), red(debugLine), red(strings.TrimSpace(lines[debugLine-1])))
-
-		} else {
-			fmt.Printf("    %s%s%s %s\n", red(ExtractFilename(fileName)), red(":"), red(data.FailingLine+1), red(strings.TrimSpace(lines[data.FailingLine])))
-		}
+		printSource(lines, *data)
+		//	printUsedVariables(data.UsedVars)
 
 	} else {
 		red := color.New(color.FgHiRed).SprintFunc()

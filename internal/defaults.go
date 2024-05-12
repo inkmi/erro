@@ -18,7 +18,7 @@ var (
 	DevMode = false
 
 	DefaultConfig = Config{
-		LinesBefore: 4,
-		LinesAfter:  2,
+		LinesBefore: 0,
+		LinesAfter:  0,
 	}
 )

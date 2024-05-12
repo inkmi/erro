@@ -21,19 +21,21 @@ func GoFindUsedArgsLastWrite(
 
 	var usedVars []UsedVar
 	for _, fa := range failingArgs {
-		lastWrite := GoLastWriteToVar(funcSrc, fa)
-		lastWriteSrc := ""
-		if lastWrite > -1 {
-			lastWrite = lastWrite + funcLine
-			lastWriteSrc = strings.TrimSpace(src[lastWrite-1])
+		if isValidVariable(fa) {
+			lastWrite := GoLastWriteToVar(funcSrc, fa)
+			lastWriteSrc := ""
+			if lastWrite > -1 {
+				lastWrite = lastWrite + funcLine
+				lastWriteSrc = strings.TrimSpace(src[lastWrite-1])
+			}
+			uv := UsedVar{
+				Name:            fa,
+				Value:           nil,
+				LastWrite:       lastWrite,
+				SourceLastWrite: lastWriteSrc,
+			}
+			usedVars = append(usedVars, uv)
 		}
-		uv := UsedVar{
-			Name:            fa,
-			Value:           nil,
-			LastWrite:       lastWrite,
-			SourceLastWrite: lastWriteSrc,
-		}
-		usedVars = append(usedVars, uv)
 	}
 	return usedVars
 }
@@ -80,12 +82,12 @@ func printUsedVariables(vars []UsedVar) {
 		printf(color.BlueString("Variables:"))
 		for _, arg := range vars {
 			if arg.Value != nil {
-				printf(" %v : %v", arg.Name, arg.Value)
+				printf(" %v : %v\n", arg.Name, arg.Value)
 			} else {
-				printf(" %v : ?", arg.Name)
+				printf(" %v : ?\n", arg.Name)
 			}
 			if arg.LastWrite > -1 {
-				printf(" ╰╴ %d : %v", arg.LastWrite, arg.SourceLastWrite)
+				printf(" ╰╴ %d : %v\n", arg.LastWrite, arg.SourceLastWrite)
 			}
 		}
 	}

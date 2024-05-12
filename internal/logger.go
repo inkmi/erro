@@ -91,7 +91,7 @@ func GoGetData(
 
 	data := PrintSourceOptions{
 		LogLine:       logLine,
-		ShortFileName: getShortFilePath(file),
+		ShortFileName: ExtractFilename(file),
 		FailingLine:   failingLineIndex,
 		FuncLine:      funcLine,
 		Highlighted: map[int][]int{
