@@ -230,9 +230,9 @@ func main() {
 			}
 
 			fmt.Println(red("-----------------------------"))
+			fmt.Printf("%s %s %s %s %s %s\n", black(stamp), ExtractFilename(caller), c(IntToLogLevel(entry.Level.Level)), cyan(">"), message, data)
 			fmt.Println(red("    ERROR: " + errorParse))
 			err = internal.PrintError(fileName, lineNumber)
-			fmt.Printf("%s %s %s %s %s %s\n", black(stamp), ExtractFilename(caller), c(IntToLogLevel(entry.Level.Level)), cyan(">"), message, data)
 			fmt.Println(red("-----------------------------"))
 			if err != nil {
 				fmt.Println(err)
