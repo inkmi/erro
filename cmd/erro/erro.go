@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/StephanSchmidt/erro/internal"
+	"github.com/Inkmi/erro/internal"
 
 	"github.com/fatih/color"
 )

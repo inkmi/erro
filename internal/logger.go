@@ -31,7 +31,7 @@ func PrintErro(source error, a ...any) error {
 		stackItems := parseAnyStackTrace(stack, 0)
 		if stackItems == nil || len(stackItems) < 1 {
 			printf("Error: %s", source)
-			printf("Erro tried to debug the error but the stack trace seems empty. If you think this is an error, please open an issue at https://github.com/StephanSchmidt/erro/issues/new and provide us logs to investigate.")
+			printf("Erro tried to debug the error but the stack trace seems empty. If you think this is an error, please open an issue at https://github.com/Inkmi/erro/issues/new and provide us logs to investigate.")
 			return errors.New("erro can't find a stack")
 		}
 		stackSourceItemIndex := 0

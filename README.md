@@ -1,8 +1,8 @@
-<img src="https://raw.githubusercontent.com/StephanSchmidt/erro/master/ErroLogo.png" width="300">
+<img src="https://raw.githubusercontent.com/Inkmi/erro/master/ErroLogo.png" width="300">
 
 # Erro: Faster and easier Go debugging in case of an error
 
-![Build state](https://github.com/StephanSchmidt/erro/actions/workflows/test.yml/badge.svg)  ![Go Version](https://img.shields.io/github/go-mod/go-version/StephanSchmidt/erro) ![Version](https://img.shields.io/github/v/tag/StephanSchmidt/erro?include_prereleases)  ![Issues](https://img.shields.io/github/issues/StephanSchmidt/erro) ![Report](https://goreportcard.com/badge/github.com/StephanSchmidt/erro)
+![Build state](https://github.com/Inkmi/erro/actions/workflows/test.yml/badge.svg)  ![Go Version](https://img.shields.io/github/go-mod/go-version/Inkmi/erro) ![Version](https://img.shields.io/github/v/tag/Inkmi/erro?include_prereleases)  ![Issues](https://img.shields.io/github/issues/Inkmi/erro) ![Report](https://goreportcard.com/badge/github.com/Inkmi/erro)
 
 <a href='https://github.com/jpoles1/gopherbadger' target='_blank'>![gopherbadger-tag-do-not-edit](https://img.shields.io/badge/Go%20Coverage-79%25-brightgreen.svg?longCache=true&style=flat)</a>
 
