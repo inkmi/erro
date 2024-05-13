@@ -215,8 +215,6 @@ func main() {
 		stamp := time.Unix(ts, 0).Format("3:04PM")
 
 		// Now you can process each log entry
-		fmt.Printf("%s %s %s %s %s %s\n", black(stamp), ExtractFilename(caller), c(IntToLogLevel(entry.Level.Level)), cyan(">"), message, data)
-
 		if entry.Level.Level == 4 {
 			red := color.New(color.FgHiRed).SprintFunc()
 			parts := strings.Split(caller, ":")
@@ -234,11 +232,14 @@ func main() {
 			fmt.Println(red("-----------------------------"))
 			fmt.Println(red("    ERROR: " + errorParse))
 			err = internal.PrintError(fileName, lineNumber)
+			fmt.Printf("%s %s %s %s %s %s\n", black(stamp), ExtractFilename(caller), c(IntToLogLevel(entry.Level.Level)), cyan(">"), message, data)
 			fmt.Println(red("-----------------------------"))
 			if err != nil {
 				fmt.Println(err)
 			}
 
+		} else {
+			fmt.Printf("%s %s %s %s %s %s\n", black(stamp), ExtractFilename(caller), c(IntToLogLevel(entry.Level.Level)), cyan(">"), message, data)
 		}
 
 	}
