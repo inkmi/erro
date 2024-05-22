@@ -16,9 +16,13 @@ before:
     - go generate ./...
 
 builds:
-  -
+  - dir: cmd/erro
+    mod_timestamp: '{{ .CommitTimestamp }}'
+    ldflags:
+      - -s -w
+    flags:
+      - -trimpath
     id: erro
-    main: ./cmd/erro
     binary: erro
     env:
       - CGO_ENABLED=0
@@ -26,6 +30,9 @@ builds:
       - linux
       - windows
       - darwin
+
+checksum:
+  name_template: 'checksums.txt'
 
 archives:
   - format: tar.gz
