@@ -2,7 +2,7 @@
 
 # Erro: Faster and easier Go debugging in case of an error
 
-![Build state](https://github.com/Inkmi/erro/actions/workflows/test.yml/badge.svg)  ![Go Version](https://img.shields.io/github/go-mod/go-version/Inkmi/erro) ![Version](https://img.shields.io/github/v/tag/Inkmi/erro?include_prereleases)  ![Issues](https://img.shields.io/github/issues/Inkmi/erro) ![Report](https://goreportcard.com/badge/github.com/Inkmi/erro)
+![Build state](https://github.com/inkmi/erro/actions/workflows/test.yml/badge.svg)  ![Go Version](https://img.shields.io/github/go-mod/go-version/Inkmi/erro) ![Version](https://img.shields.io/github/v/tag/Inkmi/erro?include_prereleases)  ![Issues](https://img.shields.io/github/issues/Inkmi/erro) ![Report](https://goreportcard.com/badge/github.com/inkmi/erro)
 
 <a href='https://github.com/jpoles1/gopherbadger' target='_blank'>![gopherbadger-tag-do-not-edit](https://img.shields.io/badge/Go%20Coverage-79%25-brightgreen.svg?longCache=true&style=flat)</a>
 
@@ -55,7 +55,7 @@ func main() {
 ## Install
 
 ```shell
-go install github.com/Inkmi/erro
+go install github.com/inkmi/erro
 ```
 
 The log data needs to be structured as JSON.
