@@ -1,4 +1,4 @@
-module github.com/Inkmi/erro
+module github.com/inkmi/erro
 
 go 1.22.2
 
