@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"embed"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -121,20 +122,23 @@ func formatJsonMap(jsonData map[string]interface{}) string {
 	return result
 }
 
-var (
-	version = "dev"
-	commit  = "none"
-	date    = "unknown"
-)
+//go:embed version.txt
+var versionFile embed.FS
 
 func main() {
 	versionFlag := flag.Bool("v", false, "Print version information")
 	flag.Parse()
 
 	if *versionFlag {
-		fmt.Printf("my app %s, commit %s, built at %s\n", version, commit, date)
+		version, err := versionFile.ReadFile("version.txt")
+		if err != nil {
+			fmt.Println("Error reading version file:", err)
+			os.Exit(1)
+		}
+		fmt.Println("erro", string(version))
 		os.Exit(0)
 	}
+
 	internal.Printer = func(format string, data ...interface{}) {
 		fmt.Printf(format, data...)
 	}
