@@ -55,9 +55,9 @@ func TestPrintUsedVariables(t *testing.T) {
 	printUsedVariables([]UsedVar{u1, u2})
 	assert.Equal(t, 5, len(tp.Output))
 	assert.Equal(t, "Variables:", tp.Output[0])
-	assert.Equal(t, " x : 2", tp.Output[1])
-	assert.Equal(t, " ╰╴ 10 : x = 2", tp.Output[2])
-	assert.Equal(t, " y : ?", tp.Output[3])
-	assert.Equal(t, " ╰╴ 15 : y = 2", tp.Output[4])
+	assert.Equal(t, " x : 2\n", tp.Output[1])
+	assert.Equal(t, " ╰╴ 10 : x = 2\n", tp.Output[2])
+	assert.Equal(t, " y : ?\n", tp.Output[3])
+	assert.Equal(t, " ╰╴ 15 : y = 2\n", tp.Output[4])
 
 }

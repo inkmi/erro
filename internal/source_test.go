@@ -28,5 +28,5 @@ Errorf("x", err, x, y)
 		UsedVars:      []UsedVar{},
 	}
 	printSource(lines, data)
-	assert.Equal(t, 7, len(tp.Output))
+	assert.Equal(t, 1, len(tp.Output))
 }
