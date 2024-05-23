@@ -1,11 +1,11 @@
+build:  go-imports
+	go build -o bin/ ./...
+
 test:
 	 go test ./...
 
 go-imports:
 	goimports -w .
-
-build:  go-imports
-	go build -o bin/ ./...
 
 upgrade-deps:
 	go get -u ./...

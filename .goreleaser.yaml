@@ -16,7 +16,7 @@ before:
     - go generate ./...
 
 builds:
-  - dir: cmd/erro
+  - dir: .
     mod_timestamp: '{{ .CommitTimestamp }}'
     ldflags:
       - -s -w
