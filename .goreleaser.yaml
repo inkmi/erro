@@ -18,8 +18,6 @@ before:
 builds:
   - dir: .
     mod_timestamp: '{{ .CommitTimestamp }}'
-    ldflags:
-      - -s -w
     flags:
       - -trimpath
     id: erro

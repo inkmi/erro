@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -120,7 +121,20 @@ func formatJsonMap(jsonData map[string]interface{}) string {
 	return result
 }
 
+var (
+	version = "dev"
+	commit  = "none"
+	date    = "unknown"
+)
+
 func main() {
+	versionFlag := flag.Bool("v", false, "Print version information")
+	flag.Parse()
+
+	if *versionFlag {
+		fmt.Printf("my app %s, commit %s, built at %s\n", version, commit, date)
+		os.Exit(0)
+	}
 	internal.Printer = func(format string, data ...interface{}) {
 		fmt.Printf(format, data...)
 	}
