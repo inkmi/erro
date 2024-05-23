@@ -4,7 +4,7 @@ go 1.22.2
 
 require (
 	github.com/fatih/color v1.17.0
-	github.com/rs/zerolog v1.32.0
+	github.com/rs/zerolog v1.33.0
 	github.com/spf13/afero v1.11.0
 	github.com/stretchr/testify v1.9.0
 )
